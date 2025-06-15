@@ -11,7 +11,9 @@
 ----
 CVGlue 是一个计算机视觉工具包。集成了人脸检测、姿态估计、质量评估等任务，提供统一的 OpenCV/PyTorch 数据处理接口，支持数据集自动化标注。
 
-### ✨ 核心功能
+
+## ✨ 核心功能
+
 **开箱即用**：统一接口调用多算法  
 **高效可视化**：Jupyter 单行代码多格式图像显示（OpenCV/PIL/Tensor/文件路径）  
 **数据集支持**：衔接 [IAP 数据集](https://github.com/Lamply/IAPDataset) 标注流程
@@ -24,7 +26,7 @@ CVGlue 是一个计算机视觉工具包。集成了人脸检测、姿态估计�
 | **扩展模块** | 图像修复/通用分割 | LaMa, SegmentAnything (开发中) |
 
 
-### 🚀 快速示例
+## 🚀 快速示例
 
 创建一个 jupyter-notebook
 
@@ -48,7 +50,9 @@ display.show([img, img_disp])
 <img src="docs/output.png" width="600"/>
 </div>
 
-### ⚙️ 安装
+
+## ⚙️ 安装
+
 ```bash
 pip install cvglue
 ```
@@ -58,7 +62,8 @@ pip install cvglue
 - `WFLW_4HG.pth`：https://github.com/protossw512/AdaptiveWingLoss
 - `SDD_FIQA_checkpoints_r50.pth`：https://github.com/Tencent/TFace
 
-### 🔌 第三方集成表
+
+## 🔌 第三方集成表
 
 | 第三方代码             | 状态  | 用处             | 原项目链接                                                      |
 | ----------------- | --- | -------------- | ---------------------------------------------------------- |

@@ -11,7 +11,8 @@
 ----
 CVGlue is a computer vision toolkit that integrates face detection, pose estimation, quality assessment, and other tasks. It provides a unified OpenCV/PyTorch data processing interface and supports automated dataset annotation.
 
-### ✨ Core Features
+
+## ✨ Core Features
 **Out-of-the-box Usage**: Unified interface for multiple algorithms  
 **Efficient Visualization**: Single-line Jupyter display for multiple image formats (OpenCV/PIL/Tensor/file paths)  
 **Dataset Support**: Seamless integration with [IAP Dataset](https://github.com/Lamply/IAPDataset) annotation pipeline
@@ -24,7 +25,7 @@ CVGlue is a computer vision toolkit that integrates face detection, pose estimat
 | **Extension Modules** | Inpainting/Generic Segmentation | LaMa, SegmentAnything (In Development) |
 
 
-### 🚀 Quick Example
+## 🚀 Quick Example
 
 Create a Jupyter Notebook:
 
@@ -45,7 +46,8 @@ display.show([img, img_disp])
 Result:
 <div align="center"> <img src="docs/output.png" width="600"/> </div>
 
-### ⚙️ Installation
+## ⚙️ Installation
+
 ```bash
 pip install cvglue
 ```
@@ -56,7 +58,7 @@ Download large models manually to `TORCH_HOME`:
 - SDD_FIQA_checkpoints_r50.pth: https://github.com/Tencent/TFace
 
 
-### 🔌 Third-Party Integrations
+## 🔌 Third-Party Integrations
 
 | Third-Party Code  | Status | Purpose                   | Original Project                                                                                                         |
 | ----------------- | ------ | ------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
