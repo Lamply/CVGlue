@@ -4,7 +4,7 @@
 [![PyPI Version](https://img.shields.io/pypi/v/cvglue)](https://pypi.org/project/cvglue/) 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-**中文简体** | [**English**](./README.md)
+**中文简体** | [**English**](./README_EN.md)
 
 </div>
 
