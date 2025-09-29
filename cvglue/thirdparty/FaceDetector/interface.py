@@ -2,7 +2,6 @@ from __future__ import print_function
 import os
 import argparse
 import torch
-import torch.backends.cudnn as cudnn
 import numpy as np
 from .infer_module import cfg_mnet, cfg_slim, cfg_rfb, cfg_re50
 from .infer_module.prior_box import PriorBox

@@ -4,7 +4,6 @@ import cv2
 import numpy as np
 from PIL import Image
 import torch
-import torch.backends.cudnn as cudnn
 import albumentations as Alb
 from albumentations.pytorch.transforms import ToTensorV2
 from ..utils.faceutils import norm_crop
@@ -18,8 +17,6 @@ __all__ = ["virtual_face_checker"]
 class virtual_face_checker(base_checker):
     def __init__(self, max_threshold=0.6, min_threshold=0.4, detect_face=False, verbose=False):
         super().__init__()
-        torch.set_grad_enabled(False)
-        cudnn.benchmark = True
         device = torch.device(torch.cuda.current_device() if torch.cuda.is_available() else "cpu")
         self.facenet = FaceFeatures("model_mobilefacenet").to(device).requires_grad_(False)
         self.verbose = verbose
@@ -52,7 +49,10 @@ class virtual_face_checker(base_checker):
                     print("no face detected.")
                 return False
         else:
-            img, _ = norm_crop(raw_img, keypoints, output_size=112, antialias=True)
+            if keypoints is not None:
+                img, _ = norm_crop(raw_img, keypoints, output_size=112, antialias=True)
+            else:
+                img = raw_img
         rgb_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         x = self.trans(image=rgb_img)['image'].unsqueeze(0).cuda()
         similarity = []
