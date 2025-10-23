@@ -61,6 +61,7 @@ pip install cvglue
 - `Resnet50_Final.pth`：https://github.com/biubug6/Pytorch_Retinaface
 - `WFLW_4HG.pth`：https://github.com/protossw512/AdaptiveWingLoss
 - `SDD_FIQA_checkpoints_r50.pth`：https://github.com/Tencent/TFace
+- `FBCNN`: https://github.com/jiaxi-jiang/FBCNN/releases/download/v1.0/fbcnn_color.pth
 
 
 ## 🔌 第三方集成表
@@ -71,8 +72,9 @@ pip install cvglue
 | AdaptiveWing      | ✅   | 人脸关键点检测        | https://github.com/protossw512/AdaptiveWingLoss            |
 | HeadPoseDetector  | ✅   | 头部姿态检测         | https://github.com/shamangary/FSA-Net                      |
 | TFace             | ✅   | 人脸质量评价         | https://github.com/Tencent/TFace                           |
-| LaMa              | ⏳  | 图像修复           | https://github.com/advimman/lama                           |
-| SegmentAnything   | ⏳  | 通用分割           | https://github.com/facebookresearch/segment-anything       |
-| InsightFace       | ✅  | faceid 提取/人脸属性 | https://github.com/TreB1eN/InsightFace_Pytorch             |
-| AttributeDetector | ✅  | 人脸属性           | https://github.com/ageitgey/face_recognition               |
+| LaMa              | ⏳   | 图像修复           | https://github.com/advimman/lama                           |
+| FBCNN             | ⏳   | JPEG压缩修复       | https://github.com/jiaxi-jiang/FBCNN                       |
+| SegmentAnything   | ⏳   | 通用分割           | https://github.com/facebookresearch/segment-anything       |
+| InsightFace       | ✅   | faceid 提取/人脸属性 | https://github.com/TreB1eN/InsightFace_Pytorch             |
+| AttributeDetector | ✅   | 人脸属性           | https://github.com/ageitgey/face_recognition               |
 
