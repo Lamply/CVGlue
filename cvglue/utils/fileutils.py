@@ -122,7 +122,7 @@ def check_image_format(img, allow_float=False, fix_channels=True):
 
     if img.dtype == np.uint8:
         pass
-    elif img.dtype == (np.float32, np.float64):
+    elif img.dtype in (np.float32, np.float64):
         if not allow_float:
             llog.info(f"Image data type is not uint8 and {img.dtype} is not allowed, convert to uint8 format")
             img = np.uint8(np.clip(img, 0, 255))

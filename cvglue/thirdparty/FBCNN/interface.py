@@ -12,16 +12,16 @@ class FBCNNProcessor:
         self.device = device or torch.device(
             "cuda" if torch.cuda.is_available() else "cpu"
         )
+        self.n_channels = 3
         self.model = self._load_model(model_path)
 
     def _load_model(self, model_path=None):
-        n_channels = 3
         if model_path is None:
             model_path = os.path.join(os.environ["TORCH_HOME"], "fbcnn_color.pth")
         elif "gray" in model_path:
-            n_channels = 1
+            self.n_channels = 1
 
-        fbcnn = FBCNN(in_out_channels=n_channels)
+        fbcnn = FBCNN(in_out_channels=self.n_channels)
         fbcnn.load_state_dict(
             torch.load(model_path, map_location="cpu", weights_only=True)
         )
@@ -108,6 +108,7 @@ class FBCNNProcessor:
                     tile_y=tile,
                     overlap=overlap,
                     upscale_amount=1,
+                    out_channels=self.n_channels
                 )
                 oom = False
             except OOM_EXCEPTION as e:
