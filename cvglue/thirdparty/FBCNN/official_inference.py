@@ -171,7 +171,7 @@ def main():
     from .model import FBCNN as net
 
     model = net(in_nc=n_channels, out_nc=n_channels, nc=nc, nb=nb, act_mode="R")
-    model.load_state_dict(torch.load(model_path), strict=True)
+    model.load_state_dict(torch.load(model_path, weights_only=True), strict=True)
     model.eval()
     for k, v in model.named_parameters():
         v.requires_grad = False

@@ -3,12 +3,13 @@ import cv2
 from .base import base_parser
 
 __all__ = ["attribute_parser", "blur_parser", "face_parser", "faceid_parser", 
-           "genderage_parser", "landmarks_parser", "quality_parser"]
+           "genderage_parser", "landmarks_parser", "quality_parser",
+           "attribute_stage", "blur_stage", "face_stage", "faceid_stage", 
+           "genderage_stage", "landmarks_stage", "quality_stage"]
 
 
-class face_parser(base_parser):
+class face_stage:
     def __init__(self, method='lamply', mode='selfie', **kwargs):
-        super().__init__()
         if method == 'lamply':
             self.set_lamply_detector(mode, **kwargs)
         elif method == 'insightface':
@@ -19,16 +20,18 @@ class face_parser(base_parser):
     def set_lamply_detector(self, mode, **kwargs):
         from ..detector import face_detector
         self.fd = face_detector(detect_mode=mode, **kwargs)
-        self.detector_bank += [self.face_bbox_keypoints_detector]
+        self.detect_func = self.face_bbox_keypoints_detector
 
     def set_insightface_detector(self):
         from insightface.app import FaceAnalysis
         self.app = FaceAnalysis(root='/workspace/cpfs-data/pretrained_models', providers=['CUDAExecutionProvider'])
         self.app.prepare(ctx_id=0)
-        self.detector_bank += [self.face_analysis_detector]
-        # self.verison = 'insightface-' + insightface.__version__
+        self.detect_func = self.face_analysis_detector
 
-    def face_bbox_keypoints_detector(self, img):
+    def __call__(self, img, context_dict):
+        return self.detect_func(img, context_dict)
+
+    def face_bbox_keypoints_detector(self, img, context_dict):
         face_list = []
         try:
             dets = self.fd(img)
@@ -49,7 +52,7 @@ class face_parser(base_parser):
 
         return {"faces":face_list}
 
-    def face_analysis_detector(self, img):
+    def face_analysis_detector(self, img, context_dict):
         try:
             face_list = self.app.get(img)
         except Exception as e:
@@ -57,10 +60,12 @@ class face_parser(base_parser):
             return {}
         return {"faces":face_list}
 
+def face_parser(method='lamply', mode='selfie', **kwargs):
+    return base_parser(stages=[face_stage(method=method, mode=mode, **kwargs)])
 
-class landmarks_parser(base_parser):
+
+class landmarks_stage:
     def __init__(self, method='adaptivewing'):
-        super().__init__()
         if method == 'adaptivewing':
             self.set_adaptivewing_detector()
         else:
@@ -69,13 +74,16 @@ class landmarks_parser(base_parser):
     def set_adaptivewing_detector(self):
         from ..detector import landmark_detector
         self.ld = landmark_detector()
-        self.detector_bank += [self.adaptivewing_detector]
+        self.detect_func = self.adaptivewing_detector
+        
+    def __call__(self, img, context_dict):
+        return self.detect_func(img, context_dict)
 
-    def adaptivewing_detector(self, img):
+    def adaptivewing_detector(self, img, context_dict):
         base_name = ''
         try:
-            base_name = self.current_obj_dict.get('name', '')
-            update_dict = self.current_obj_dict['faces']
+            base_name = context_dict.get('name', '')
+            update_dict = context_dict.get('faces', [])
             for face in update_dict:
                 face_box = face['face_box']
                 lands = self.ld(img, face_box)
@@ -84,10 +92,12 @@ class landmarks_parser(base_parser):
             print(base_name, repr(e))
         return {}
 
+def landmarks_parser(method='adaptivewing'):
+    return base_parser(stages=[landmarks_stage(method=method)])
 
-class attribute_parser(base_parser):
+
+class attribute_stage:
     def __init__(self, method='headpose'):
-        super().__init__()
         if method == 'headpose':
             self.set_headpose_detector()
         else:
@@ -96,13 +106,16 @@ class attribute_parser(base_parser):
     def set_headpose_detector(self):
         from ..detector import attribute_detector
         self.ad = attribute_detector()
-        self.detector_bank += [self.face_attribute_detector]
+        self.detect_func = self.face_attribute_detector
+        
+    def __call__(self, img, context_dict):
+        return self.detect_func(img, context_dict)
 
-    def face_attribute_detector(self, img):
+    def face_attribute_detector(self, img, context_dict):
         base_name = ''
         try:
-            base_name = self.current_obj_dict.get('name', '')
-            update_dict = self.current_obj_dict['faces']
+            base_name = context_dict.get('name', '')
+            update_dict = context_dict.get('faces', [])
             for face in update_dict:
                 headpose_pyr = self.ad(img, face['face_box'])
                 face['headpose'] = headpose_pyr
@@ -110,10 +123,12 @@ class attribute_parser(base_parser):
             print(base_name, repr(e))
         return {}
 
+def attribute_parser(method='headpose'):
+    return base_parser(stages=[attribute_stage(method=method)])
 
-class genderage_parser(base_parser):
+
+class genderage_stage:
     def __init__(self, method='insightface'):
-        super().__init__()
         if method == 'insightface':
             self.set_genderage_detector()
         else:
@@ -126,13 +141,16 @@ class genderage_parser(base_parser):
         self.app = FaceAnalysis(root='/workspace/cpfs-data/pretrained_models', **kwargs)
         self.app.prepare(ctx_id=0)
         self.face_dict = insightface.app.common.Face({'bbox':None})
-        self.detector_bank += [self.face_genderage_detector]
+        self.detect_func = self.face_genderage_detector
 
-    def face_genderage_detector(self, img):
+    def __call__(self, img, context_dict):
+        return self.detect_func(img, context_dict)
+
+    def face_genderage_detector(self, img, context_dict):
         base_name = ''
         try:
-            base_name = self.current_obj_dict.get('name', '')
-            update_dict = self.current_obj_dict['faces']
+            base_name = context_dict.get('name', '')
+            update_dict = context_dict.get('faces', [])
             for face in update_dict:
                 self.face_dict['bbox'] = face['face_box']
                 gender, age = self.app.models['genderage'].get(img, self.face_dict)
@@ -142,10 +160,12 @@ class genderage_parser(base_parser):
             print(base_name, repr(e))
         return {}
 
+def genderage_parser(method='insightface'):
+    return base_parser(stages=[genderage_stage(method=method)])
 
-class faceid_parser(base_parser):
+
+class faceid_stage:
     def __init__(self, method='insightface'):
-        super().__init__()
         if method == 'insightface':
             self.set_faceid_detector()
         else:
@@ -154,23 +174,28 @@ class faceid_parser(base_parser):
     def set_faceid_detector(self):
         from ..detector import faceid_detector
         self.faid_detector = faceid_detector('model_ir_se50')
-        self.detector_bank += [self.face_id_detector]
+        self.detect_func = self.face_id_detector
+        
+    def __call__(self, img, context_dict):
+        return self.detect_func(img, context_dict)
 
-    def face_id_detector(self, img):
+    def face_id_detector(self, img, context_dict):
         base_name = ''
         try:
-            base_name = self.current_obj_dict.get('name', '')
-            update_dict = self.current_obj_dict['faces']
+            base_name = context_dict.get('name', '')
+            update_dict = context_dict.get('faces', [])
             for face in update_dict:
                 face['faceid'] = self.faid_detector(img, face['key_points']).flatten().tolist()
         except Exception as e:
             print(base_name, repr(e))
         return {}
 
+def faceid_parser(method='insightface'):
+    return base_parser(stages=[faceid_stage(method=method)])
 
-class blur_parser(base_parser):
+
+class blur_stage:
     def __init__(self, method='opencv'):
-        super().__init__()
         if method == 'opencv':
             self.set_blur_detector()
         else:
@@ -179,11 +204,14 @@ class blur_parser(base_parser):
     def set_blur_detector(self):
         from ..checker import blur_checker
         self.blur_detector = blur_checker()
-        self.detector_bank += [self.blur_detect]
+        self.detect_func = self.blur_detect
 
-    def blur_detect(self, img):
+    def __call__(self, img, context_dict):
+        return self.detect_func(img, context_dict)
+
+    def blur_detect(self, img, context_dict):
         try:
-            update_dict = self.current_obj_dict['faces']
+            update_dict = context_dict.get('faces', [])
             for face in update_dict:
                 self.blur_detector.check_image(img, face)
                 face['blurriness'] = self.blur_detector.score
@@ -191,10 +219,12 @@ class blur_parser(base_parser):
             pass
         return {}
 
+def blur_parser(method='opencv'):
+    return base_parser(stages=[blur_stage(method=method)])
 
-class quality_parser(base_parser):
+
+class quality_stage:
     def __init__(self, method='tface'):
-        super().__init__()
         if method == 'tface':
             self.set_face_quality_detector()
         else:
@@ -203,17 +233,22 @@ class quality_parser(base_parser):
     def set_face_quality_detector(self):
         from ..detector import quality_detector
         self.qd = quality_detector('r50')
-        self.detector_bank += [self.face_quality_detector]
+        self.detect_func = self.face_quality_detector
 
-    def face_quality_detector(self, img):
+    def __call__(self, img, context_dict):
+        return self.detect_func(img, context_dict)
+
+    def face_quality_detector(self, img, context_dict):
         base_name = ''
         try:
-            base_name = self.current_obj_dict.get('name', '')
-            update_dict = self.current_obj_dict['faces']
+            base_name = context_dict.get('name', '')
+            update_dict = context_dict.get('faces', [])
             for face in update_dict:
                 face['quality'] = self.qd(img, face['key_points']).item()
         except Exception as e:
             print(base_name, repr(e))
         return {}
 
+def quality_parser(method='tface'):
+    return base_parser(stages=[quality_stage(method=method)])
 

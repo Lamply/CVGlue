@@ -11,7 +11,7 @@ def load_network(network, pretrained='', verbose=True, rank=0, local_rank=0, loa
             map_func = lambda storage, loc: storage.cuda(local_rank)
         else:
             map_func = lambda storage, loc: storage
-        pretrained_dict = torch.load(pretrained, map_location=map_func)
+        pretrained_dict = torch.load(pretrained, map_location=map_func, weights_only=True)
     elif isinstance(pretrained, OrderedDict):
         pretrained_dict = pretrained
     else:

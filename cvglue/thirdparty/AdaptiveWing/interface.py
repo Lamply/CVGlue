@@ -14,7 +14,7 @@ class AdaptiveWing():
         END_RELU = False
         NUM_LANDMARKS = 98
         self.model_ft = FAN(HG_BLOCKS, END_RELU, GRAY_SCALE, NUM_LANDMARKS)
-        checkpoint = torch.load(PRETRAINED_WEIGHTS, map_location=lambda storage, loc: storage)
+        checkpoint = torch.load(PRETRAINED_WEIGHTS, map_location=lambda storage, loc: storage, weights_only=True)
         if 'state_dict' not in checkpoint:
             self.model_ft.load_state_dict(checkpoint)
         else:

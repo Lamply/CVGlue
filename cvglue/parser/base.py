@@ -10,11 +10,14 @@ __all__ = ["base_parser"]
 
 
 class base_parser(object):
-    def __init__(self):
-        self.detector_bank = []
+    def __init__(self, stages=None):
+        self.stages = stages or []
         self.out_json = {}
         self.current_obj_dict = {}
         self.output_dir = './'
+        self.out_json_file = None
+        self.append_flag = False
+        self.continue_flag = False
 
     def init_settings(self, out_json_file, append_flag=False, continue_flag=False):
         self.output_dir = os.path.dirname(os.path.abspath(out_json_file))
@@ -39,9 +42,10 @@ class base_parser(object):
             print(name, repr(e))
             return
         self.current_obj_dict = set_image_anno(name, height=img.shape[0], width=img.shape[1], channel=img.shape[2])
-        for detector in self.detector_bank:
-            label_dict = detector(img)
-            self.current_obj_dict.update(label_dict)
+        for stage in self.stages:
+            label_dict = stage(img, self.current_obj_dict)
+            if label_dict:
+                self.current_obj_dict.update(label_dict)
         self.out_json.update({name: self.current_obj_dict})
         return self.out_json[name]
 
@@ -69,9 +73,10 @@ class base_parser(object):
                                                                                                      height=img.shape[0], 
                                                                                                      width=img.shape[1], 
                                                                                                      channel=img.shape[2])
-            for detector in self.detector_bank:
-                label_dict = detector(img)
-                self.current_obj_dict.update(label_dict)
+            for stage in self.stages:
+                label_dict = stage(img, self.current_obj_dict)
+                if label_dict:
+                    self.current_obj_dict.update(label_dict)
             self.out_json.update({base_name: self.current_obj_dict})
         elif not self.continue_flag:
             raise RuntimeError("ERROR: label of %s already exists in json file, conflict" % file_name)

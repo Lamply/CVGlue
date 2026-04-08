@@ -16,7 +16,7 @@ class Quality:
         self.net = R50([112, 112], use_type="Qua")
         net_dict = self.net.state_dict()     
         data_dict = {
-            key.replace('module.', ''): value for key, value in torch.load(model_path, map_location=lambda storage, loc: storage).items()}
+            key.replace('module.', ''): value for key, value in torch.load(model_path, map_location=lambda storage, loc: storage, weights_only=True).items()}
         net_dict.update(data_dict)
         self.net.load_state_dict(net_dict)
         self.net.eval().requires_grad_(False)

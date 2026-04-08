@@ -13,9 +13,12 @@ class FaceFeatures(nn.Module):
         model_name(str):       'model_mobilefacenet' or 'model_ir_se50'
         """
         super().__init__()
-        weights_path = os.path.join(InsightFace_dir, model_name+'.pth')
+        if model_name == "model_ir_se50":
+            weights_path = os.path.join(os.environ["TORCH_HOME"], "model_ir_se50.pth")
+        else:
+            weights_path = os.path.join(InsightFace_dir, model_name+'.pth')
         self.model = MobileFaceNet(512) if model_name == 'model_mobilefacenet' else Backbone(input_size=112, num_layers=50, drop_ratio=0.6, mode='ir_se')
-        self.model.load_state_dict(torch.load(weights_path, map_location=lambda storage, loc: storage))
+        self.model.load_state_dict(torch.load(weights_path, map_location=lambda storage, loc: storage, weights_only=True))
         self.model.eval()
         self.face_pool = torch.nn.AdaptiveAvgPool2d((112, 112))
 

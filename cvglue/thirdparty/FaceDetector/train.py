@@ -67,7 +67,7 @@ save_folder = args.save_folder
 
 if args.resume_net is not None:
     print('Loading resume network...')
-    state_dict = torch.load(args.resume_net)
+    state_dict = torch.load(args.resume_net, weights_only=True)
     # create new OrderedDict that does not contain `module.`
     from collections import OrderedDict
     new_state_dict = OrderedDict()

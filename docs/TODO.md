@@ -1,8 +1,8 @@
 # TODO List
 - [ ] example 填充
 - [x] 统一设定公开接口，减少不必要的暴露
-- [ ] `torch.load()` 指明 `weights_only=True`
-- [ ] 重构 parser 逻辑，解决引用相关的问题
+- [x] `torch.load()` 指明 `weights_only=True`
+- [x] 重构 parser 逻辑，解决引用相关的问题
 - [ ] 只处理 idx_list 的 pipeline 无法记录 idx 的生成方法，可能要用某种方法固化一下
 - [ ] `key_points` 应该统一为 `keypoints` 
 - [ ] 附带资源可能缺省 annotation file，要不增加缺省的情况，不用额外存储多一个文件

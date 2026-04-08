@@ -32,7 +32,7 @@ class landmark_checker(base_checker):
         '''Check whether landmarks are relaiable.
 
         Notice:
-            - Checking algorithmn using `key_points` from face detector and `landmarks` from landmarks detector
+            - Checking algorithm using `key_points` from face detector and `landmarks` from landmarks detector
             - Abnormal would appear when large L2 error calculated between `key_points` and `landmarks`
         '''
         ret = True

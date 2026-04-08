@@ -4,7 +4,9 @@ import cvglue
 import numpy as np
 
 def test_image_parse():
-    a = cv2.imread('data/images/single_face_img.jpg')
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    img_path = os.path.join(base_dir, 'data', 'images', 'single_face_img.jpg')
+    a = cv2.imread(img_path)
     parser = cvglue.parser.face_parser(model_name='RBF', method='lamply', mode='selfie')
     anno = parser.parse_img(a)
     assert anno['height'] == 513
@@ -34,11 +36,16 @@ def test_dataset_parse():
         norm_B = np.linalg.norm(B_flat)
         return dot_product / (norm_A * norm_B)  # 范围 [-1, 1]
 
-    parser = cvglue.parser.get_parser('lamply-faceid')
-    parser.parse('data/images/', out_json_file='data/tmp_annotations.json')
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    img_dir = os.path.join(base_dir, 'data', 'images')
+    tmp_json = os.path.join(base_dir, 'data', 'tmp_annotations.json')
+    ref_json = os.path.join(base_dir, 'data', 'ref_annotations.json')
 
-    anno_dict = cvglue.read_json_file('data/tmp_annotations.json')
-    ref_anno_dict = cvglue.read_json_file('data/ref_annotations.json')
+    parser = cvglue.parser.get_parser('lamply-faceid')
+    parser.parse(img_dir, out_json_file=tmp_json)
+
+    anno_dict = cvglue.read_json_file(tmp_json)
+    ref_anno_dict = cvglue.read_json_file(ref_json)
     face = anno_dict['single_face_img']['faces'][0]
     face_ref = ref_anno_dict['single_face_img']['faces'][0]
 
@@ -51,4 +58,4 @@ def test_dataset_parse():
     assert abs(face['blurriness'] - face_ref['blurriness']) < 10.0
     assert cosine_similarity(face['faceid'], face_ref['faceid']) > eps
 
-    os.remove('data/tmp_annotations.json')
+    os.remove(tmp_json)

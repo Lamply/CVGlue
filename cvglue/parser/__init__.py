@@ -24,20 +24,35 @@ def anno_exists(anno: dict, domain: Union[str, list], **kwargs):
 
 from .base import base_parser
 # from .mask import mask_parser
-from .face import face_parser, landmarks_parser, blur_parser, attribute_parser, genderage_parser, faceid_parser, quality_parser
+from .face import (face_parser, landmarks_parser, blur_parser, attribute_parser, 
+                   genderage_parser, faceid_parser, quality_parser,
+                   face_stage, landmarks_stage, blur_stage, attribute_stage, 
+                   genderage_stage, faceid_stage, quality_stage)
 
 def get_parser(version):
     if 'lamply' in version:
         if 'faceid' in version:
-            class merge_parser(faceid_parser, blur_parser, quality_parser, attribute_parser, landmarks_parser, face_parser):
-                __version__ = 'lamply-1.3-faceid'
-                def __init__(self):
-                    super().__init__()
+            stages = [
+                face_stage(),
+                landmarks_stage(),
+                attribute_stage(),
+                quality_stage(),
+                blur_stage(),
+                faceid_stage()
+            ]
+            parser = base_parser(stages=stages)
+            parser.__version__ = 'lamply-2.0-faceid'
+            return parser
         else:
-            class merge_parser(blur_parser, quality_parser, attribute_parser, landmarks_parser, face_parser):
-                __version__ = 'lamply-1.3'
-                def __init__(self):
-                    super().__init__()
+            stages = [
+                face_stage(),
+                landmarks_stage(),
+                attribute_stage(),
+                quality_stage(),
+                blur_stage()
+            ]
+            parser = base_parser(stages=stages)
+            parser.__version__ = 'lamply-2.0'
+            return parser
     else:
         raise NotImplementedError(version, "is not avaliable.")
-    return merge_parser()
