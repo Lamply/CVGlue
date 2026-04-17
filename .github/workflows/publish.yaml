@@ -31,8 +31,8 @@ jobs:
       - name: Install project dependencies (including dev)
         run: hatch env create
 
-      - name: Run tests with pytest (via hatch)
-        run: hatch run pytest
+      - name: Run tests (via hatch)
+        run: hatch run test
 
       - name: Build package with hatch
         run: hatch build
