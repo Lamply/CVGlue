@@ -27,7 +27,7 @@ class base_parser(object):
             self.out_json = read_json_file(out_json_file)
         elif not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir, exist_ok=True)
-            print("WARNING: output direct (%s) not exists, auto created" % self.output_dir)
+            print("WARNING: output dir (%s) not exists, auto created" % self.output_dir)
         elif os.path.exists(out_json_file):
             raise RuntimeError('Unexpected %s is already exists, and not work in current mode.' % out_json_file)
         self.out_json_file = out_json_file

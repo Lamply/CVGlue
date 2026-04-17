@@ -4,17 +4,19 @@ import numpy as np
 import cv2
 from .model_r50 import R50
 
+
 class Quality:
     def __init__(self, model_name, device):
         """
-            model_name(str):     "r50"
+        model_name(str):     "r50"
+        device:              target device (cpu/gpu)
         """
         if model_name == "r50":
             model_path = os.path.join(os.environ['TORCH_HOME'], "SDD_FIQA_checkpoints_r50.pth")
         else:
             raise NotImplementedError("model_name %s not implemented" % model_name)
         self.net = R50([112, 112], use_type="Qua")
-        net_dict = self.net.state_dict()     
+        net_dict = self.net.state_dict()
         data_dict = {
             key.replace('module.', ''): value for key, value in torch.load(model_path, map_location=lambda storage, loc: storage, weights_only=True).items()}
         net_dict.update(data_dict)
@@ -23,6 +25,5 @@ class Quality:
         self.net.to(device)
 
     def detect(self, x):
-        """ return score in [0.0, 100.0], larger is better
-        """
+        """return score in [0.0, 100.0], larger is better"""
         return self.net(x)
