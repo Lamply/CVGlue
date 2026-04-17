@@ -30,7 +30,6 @@ dependencies = [
     "scikit-learn",
     "imageio-ffmpeg",
     "lpips",
-    "pytest",
     "onnx",
     "onnxruntime-gpu",
     "torch >= 1.6.0"
@@ -60,3 +59,11 @@ include = [
   "cvglue/*.onnx",
   "cvglue/*.yaml"
 ]
+
+[tool.hatch.envs.default]
+dependencies = [
+  "pytest>=7.0"
+]
+
+[tool.hatch.envs.default.scripts]
+test = "pytest tests/ -v"

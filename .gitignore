@@ -105,5 +105,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+.ruff_cache/
+
 deprecated/
 .gitnexus
+
+.claude/
