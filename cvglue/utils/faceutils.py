@@ -23,15 +23,9 @@ __all__ = ["align_face", "cal_eye_dist", "cal_face_area", "crop_face_v2", "crop_
            "render_face", "warp_back", "warp_face_Delaunay", "warp_face_Delaunay_flow", 
            "warp_face_box", "warp_face_landsmarks", "warp_landmarks", "warp_with_landmarks"]
 
-
 def get_face_parser():
-    from ..parser import face_parser, landmarks_parser
-    class merge_parser(landmarks_parser, face_parser):
-        __version__ = 'lamply-1.3-mini'
-        def __init__(self):
-            super().__init__()
-    return merge_parser()
-
+    from ..parser import get_parser
+    return get_parser('lamply-mini')
 
 def cal_face_area(face_box):
     return (face_box[2]-face_box[0])*(face_box[3]-face_box[1])

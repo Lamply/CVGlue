@@ -43,6 +43,14 @@ def get_parser(version):
             parser = base_parser(stages=stages)
             parser.__version__ = 'lamply-2.0-faceid'
             return parser
+        elif 'mini' in version:
+            stages = [
+                face_stage(),
+                landmarks_stage(),
+            ]
+            parser = base_parser(stages=stages)
+            parser.__version__ = 'lamply-2.0-mini'
+            return parser
         else:
             stages = [
                 face_stage(),

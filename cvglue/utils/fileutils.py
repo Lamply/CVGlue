@@ -1,10 +1,11 @@
 import os
 import glob
 import re
+import unicodedata
 import json
 import requests
 import numpy as np
-from typing import List
+from typing import Union, List, Set, Iterable
 try:
     from deepdiff import DeepDiff
     # pip install u-msgpack-python
@@ -17,7 +18,8 @@ llog = setup_logger(name=__name__)
 
 SUPPORTED_IMG_EXTENSIONS = [
     '.jpg', '.JPG', '.jpeg', '.JPEG',
-    '.png', '.PNG', '.bmp', '.BMP'
+    '.png', '.PNG', '.bmp', '.BMP', 
+    '.webp', '.WEBP'
 ]
 
 SUPPORTED_VIDEO_EXTENSIONS = [
@@ -25,10 +27,10 @@ SUPPORTED_VIDEO_EXTENSIONS = [
 ]
 
 __all__ = ["check_aligned_img_dataset", "check_dict_differences", "check_grouped_img_dataset", 
-           "check_if_overlap_files", "check_image_format", "convert_valid_name", "download_url", 
+           "check_if_overlap_files", "check_image_format", "convert_safe_filename", "download_url", 
            "get_base_name", "get_ext_name", "get_file_name", "make_dataset", "make_grouped_dataset", 
            "make_structural_dataset", "read_json_file", "select_subdataset", "select_subdataset_idxs", 
-           "write_json_file", "SUPPORTED_IMG_EXTENSIONS"]
+           "write_json_file", "make_dataset_recursive", "SUPPORTED_IMG_EXTENSIONS"]
 
 
 def get_file_name(file_path):
@@ -48,8 +50,32 @@ def get_ext_name(file_path):
         ext_name = None
     return ext_name
 
-def convert_valid_name(name: str, invalid_char: str = r"[^\w\s.-]", replace: str = "") -> str:
-    return re.sub(invalid_char, replace, name)
+def convert_safe_filename(file_name):
+    # 只保留字母、数字、点、下划线和连字符
+    # \u4e00-\u9fa5 用于保留中文字符（如果需要）
+    return re.sub(r'[^a-zA-Z0-9\._\-\u4e00-\u9fa5]', '-', file_name)
+
+def slugify(file_name: str, lower: bool = True, ascii: bool = True) -> str:
+    """
+    将字符串转换为安全的 Linux/Web 文件名。
+    1. 规范化 Unicode
+    2. 转换为小写（默认，可选）
+    3. 替换非字母、数字、下划线、连字符为下划线
+    4. 将空格、连字符转换为下划线
+    """
+    file_name = str(file_name)
+    # 将 Unicode 字符拆解为基础字符（例如 将 'é' 转为 'e'）
+    file_name = unicodedata.normalize('NFKD', file_name)
+    # （可选）移除重音符号等非 ASCII 字符
+    if ascii:
+        file_name = file_name.encode('ascii', 'ignore').decode('ascii') 
+    # 替换非字母、数字、下划线、连字符
+    file_name = re.sub(r'[^\w\s-]', '_', file_name).strip()
+    # （可选）转换为小写
+    if lower:
+        file_name = file_name.lower()
+    # 将空格和重复的连字符替换为单个下划线
+    return re.sub(r'[-\s]+', '_', file_name)
 
 
 def make_dataset(dir):
@@ -101,6 +127,51 @@ def make_structural_dataset(root_dir, leaf_depth):
 
     dataset = recursive_list(root_dir)
     return dataset
+
+def make_dataset_recursive(
+    root_path: str, 
+    extensions: Union[str, Iterable[str]], 
+    exclude_dirs: Union[Iterable[str], None] = None,
+    exclude_files: Union[Iterable[str], None] = None
+) -> List[str]:
+    """
+    递归获取指定目录下所有包含指定后缀的文件的绝对路径，支持排除特定目录和文件。
+
+    :param root_path: 要搜索的根目录路径
+    :param extensions: 需要查找的文件后缀，可以是字符串 (如 '.txt') 或列表/元组 (如 ['.py', '.json'])
+    :param exclude_dirs: 需要排除的目录名称列表 (完全匹配，如 ['node_modules', '.git'])
+    :param exclude_files: 需要排除的文件名称列表 (完全匹配，如 ['config.py', 'temp.txt'])
+    :return: 包含绝对路径的列表
+    """
+    # 1. 参数格式化与预处理
+    # 确保 extensions 是一个元组，并且以 '.' 开头 (str.endswith 需要元组)
+    if isinstance(extensions, str):
+        extensions = (extensions,)
+    extensions = tuple(ext if ext.startswith('.') else f'.{ext}' for ext in extensions)
+
+    exclude_dirs_set: Set[str] = set(exclude_dirs) if exclude_dirs else set()
+    exclude_files_set: Set[str] = set(exclude_files) if exclude_files else set()
+
+    root_abs_path = os.path.abspath(root_path)
+    result_paths: List[str] = []
+
+    # 2. 遍历目录树
+    for dirpath, dirnames, filenames in os.walk(root_abs_path):
+        dirnames[:] = [d for d in dirnames if d not in exclude_dirs_set]
+
+        # 3. 筛选文件
+        for filename in filenames:
+            # 排除特定文件
+            if filename in exclude_files_set:
+                continue
+            
+            # 匹配后缀
+            if filename.endswith(extensions):
+                # 拼接并保存绝对路径
+                abs_path = os.path.join(dirpath, filename)
+                result_paths.append(abs_path)
+
+    return result_paths
 
 
 def check_if_overlap_files(paths):
@@ -164,12 +235,36 @@ def read_json_file(file, use_msgpack=False, **open_kwargs):
     return out
 
 def write_json_file(file, obj, override=False, use_msgpack=False, min_size=10, encoding='utf-8', **dump_kwargs):
+    """Serializes an object and writes it to a file using JSON or MessagePack.
+
+    Args:
+        file (str): Path to the target file.
+        obj (Any): The Python object to serialize.
+        override (bool): If False, prevents overwriting an existing file. Defaults to False.
+        use_msgpack (bool): If True, serializes to MessagePack binary format instead of JSON text. Defaults to False.
+        min_size (int): Minimum expected length (chars/bytes) of serialized data to guard against empty dumps. Defaults to 10.
+        encoding (str): Text encoding used strictly for JSON files. Defaults to 'utf-8'.
+        **dump_kwargs: Optional keyword arguments passed directly to `json.dumps()`.
+            - For better visualize: "indent=2, ensure_ascii=False"
+
+    Raises:
+        RuntimeError: If the file exists and `override` is False.
+        RuntimeError: If the serialized content size is less than or equal to `min_size`.
+        ValueError: If an encoding is mistakenly passed into binary file mode.
+    """
     if os.path.exists(file) and not override:
         raise RuntimeError(f"Try to override file with override={override}.")
+
     dump_cont = umsgpack.packb(obj) if use_msgpack else json.dumps(obj, **dump_kwargs)
+
     if len(dump_cont) <= min_size:
         raise RuntimeError(f"Dump object size is smaller than {min_size}, which is not expected.")
-    with open(file, 'wb+' if use_msgpack else 'w+', encoding=encoding) as f:
+
+    open_kwargs = {'mode': 'wb+' if use_msgpack else 'w+'}
+    if not use_msgpack:
+        open_kwargs['encoding'] = encoding
+
+    with open(file, **open_kwargs) as f:
         f.write(dump_cont)
 
 
