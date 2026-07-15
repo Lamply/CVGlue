@@ -3,6 +3,8 @@ import cv2
 import cvglue
 import numpy as np
 
+llog = cvglue.setup_logger(name=__name__)
+
 def test_image_parse():
     base_dir = os.path.dirname(os.path.abspath(__file__))
     img_path = os.path.join(base_dir, 'data', 'images', 'single_face_img.jpg')
@@ -20,12 +22,15 @@ def test_image_parse():
 
 # Enable only with large local models placed in TORCH_HOME
 def test_dataset_parse():
+    if not os.environ.get('TORCH_HOME'):
+        return
+
     model1 = os.path.exists(os.path.join(os.environ['TORCH_HOME'], 'Resnet50_Final.pth'))
     model2 = os.path.exists(os.path.join(os.environ['TORCH_HOME'], 'WFLW_4HG.pth'))
     model3 = os.path.exists(os.path.join(os.environ['TORCH_HOME'], 'SDD_FIQA_checkpoints_r50.pth'))
 
     if not model1 or not model2 or not model3:
-        print("Dataset test is disabled.")
+        llog.warning("Large models are unavailable...Skip test_dataset_parse()")
         return
 
     def cosine_similarity(A, B):
