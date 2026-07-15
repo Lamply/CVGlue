@@ -35,7 +35,7 @@ jobs:
         run: hatch run test
 
       - name: Build package with hatch
-        run: hatch build
+        run: hatch build -t wheel
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
