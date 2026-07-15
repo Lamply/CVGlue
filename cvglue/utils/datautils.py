@@ -2,7 +2,6 @@ import os
 import cv2
 import numpy as np
 from functools import wraps
-import torch
 import albumentations as Alb
 from albumentations.pytorch.transforms import ToTensorV2
 from .imageutils import resize_fix

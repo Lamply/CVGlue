@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 from .fileutils import check_image_format
-from .imageutils import get_rounded_rect, pad_center, crop_rect
+from .imageutils import get_rounded_rect, pad_center, crop_rect, gaussian_kernel
 
 __all__ = ["DoG", "XDoG", "apply_feather", "cal_residual_mask", 
            "calculate_similarity_to_shape", "crop_contours", 
