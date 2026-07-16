@@ -68,7 +68,7 @@ Download large models manually to `TORCH_HOME`:
 | HeadPoseDetector  | ✅      | Head Pose Estimation      | [https://github.com/shamangary/FSA-Net](https://github.com/shamangary/FSA-Net)                                           |
 | TFace             | ✅      | Face Quality Assessment   | [https://github.com/Tencent/TFace](https://github.com/Tencent/TFace)                                                     |
 | LaMa              | ⏳      | Image Inpainting          | [https://github.com/advimman/lama](https://github.com/advimman/lama)                                                     |
-| FBCNN             | ⏳      | JPEG Artifacts Removal    | [https://github.com/jiaxi-jiang/FBCNN](https://github.com/jiaxi-jiang/FBCNN)                                             |
+| FBCNN             | ✅      | JPEG Artifacts Removal    | [https://github.com/jiaxi-jiang/FBCNN](https://github.com/jiaxi-jiang/FBCNN)                                             |
 | SegmentAnything   | ⏳      | Generic Segmentation      | [https://github.com/facebookresearch/segment-anything](https://github.com/facebookresearch/segment-anything)             |
 | InsightFace       | ✅      | Face ID/Attributes        | [https://github.com/TreB1eN/InsightFace_Pytorch](https://github.com/TreB1eN/InsightFace_Pytorch)                         |
 | AttributeDetector | ✅      | Face Attribute Analysis   | [https://github.com/ageitgey/face_recognition](https://github.com/ageitgey/face_recognition)                             |

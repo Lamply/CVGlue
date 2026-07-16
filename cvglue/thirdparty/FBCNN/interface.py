@@ -59,7 +59,7 @@ class FBCNNProcessor:
         处理图像
 
         Args:
-            image: 输入图像（PyTorch张量，形状为[C,H,W]或[B,C,H,W]），值域为 [0.0, 1.0]
+            image: 输入图像（PyTorch张量，形状为[C,H,W]或[B,C,H,W]），值域为 [0.0, 1.0] (除 255.0 缩放)
             auto_detect: 是否自动检测压缩质量
             compression_level: 压缩级别（0-100）
             tile_size: 分块大小

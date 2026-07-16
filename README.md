@@ -73,7 +73,7 @@ pip install cvglue
 | HeadPoseDetector  | ✅   | 头部姿态检测         | https://github.com/shamangary/FSA-Net                      |
 | TFace             | ✅   | 人脸质量评价         | https://github.com/Tencent/TFace                           |
 | LaMa              | ⏳   | 图像修复           | https://github.com/advimman/lama                           |
-| FBCNN             | ⏳   | JPEG压缩修复       | https://github.com/jiaxi-jiang/FBCNN                       |
+| FBCNN             | ✅   | JPEG压缩修复       | https://github.com/jiaxi-jiang/FBCNN                       |
 | SegmentAnything   | ⏳   | 通用分割           | https://github.com/facebookresearch/segment-anything       |
 | InsightFace       | ✅   | faceid 提取/人脸属性 | https://github.com/TreB1eN/InsightFace_Pytorch             |
 | AttributeDetector | ✅   | 人脸属性           | https://github.com/ageitgey/face_recognition               |
