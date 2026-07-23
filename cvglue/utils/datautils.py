@@ -59,9 +59,9 @@ def to_tensor(img, shape=None, cvtcolor=True, mean=(0.5,0.5,0.5), std=(0.5,0.5,0
 
 def to_image(tensor, cvtcolor=False, valmin=-1.0, valmax=1.0):
     if isinstance(tensor, list) or (len(tensor.shape) == 4):
-        img_list = [to_image(tensor[i], cvtcolor=cvtcolor) for i in range(len(tensor))]
+        img_list = [to_image(tensor[i], cvtcolor=cvtcolor, valmin=valmin, valmax=valmax) for i in range(len(tensor))]
         return img_list
-    img = (tensor.detach() + valmin) * 255.0 / (valmax - valmin)
+    img = (tensor.detach() - valmin) * 255.0 / (valmax - valmin)
     img = img.clamp(0, 255).cpu().numpy()
     img = img.transpose(1,2,0)
     img = np.uint8(img)

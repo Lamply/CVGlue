@@ -6,4 +6,4 @@ from . import detector
 from . import checker
 from . import thirdparty
 
-__version__ = '1.2.1'
+__version__ = '1.3.0'
