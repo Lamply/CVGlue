@@ -72,3 +72,6 @@ dependencies = [
 test = "pytest tests/ -v"
 lint = "ruff check ."
 format = "ruff format ."
+
+[tool.ruff]
+exclude = ["cvglue/thirdparty"]
