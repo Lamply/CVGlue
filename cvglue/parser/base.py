@@ -1,13 +1,15 @@
 import os
+
 import cv2
-from ..utils import make_dataset, check_image_format, read_json_file, write_json_file
 from tqdm import tqdm, trange
+
+from ..utils import check_image_format, make_dataset, read_json_file, write_json_file
 from . import set_image_anno
 
 __all__ = ["base_parser"]
 
 
-class base_parser(object):
+class base_parser:
     def __init__(self, stages=None):
         self.stages = stages or []
         self.out_json = {}

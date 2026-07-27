@@ -2,22 +2,24 @@
 Set your custom detector here.
 """
 
-import cv2
 import functools
+
+import cv2
 import numpy as np
 import torch
-from ..thirdparty.FaceDetector.interface import face_detector as custom_detector
+
 from ..thirdparty.AdaptiveWing import AdaptiveWing
-from ..utils.faceutils import warp_landmarks, crop_face_v4, norm_crop
+from ..thirdparty.FaceDetector.interface import face_detector as custom_detector
 from ..thirdparty.HeadPoseDetector import HeadPoseDetector
 from ..thirdparty.InsightFace.face_features import FaceFeatures
 from ..thirdparty.TFace import Quality
+from ..utils.faceutils import crop_face_v4, norm_crop, warp_landmarks
 
 __all__ = [
-    "face_detector",
-    "landmark_detector",
     "attribute_detector",
+    "face_detector",
     "faceid_detector",
+    "landmark_detector",
     "quality_detector",
 ]
 

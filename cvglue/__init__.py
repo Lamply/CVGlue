@@ -1,7 +1,3 @@
-from .utils import *
-from . import processor
-from . import parser
+from . import checker, detector, parser, processor, thirdparty
 from . import displayer as display
-from . import detector
-from . import checker
-from . import thirdparty
+from .utils import *

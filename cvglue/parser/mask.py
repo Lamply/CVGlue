@@ -3,11 +3,13 @@ Deprecated
 """
 
 import os
-import cv2
-from .base import base_parser
 
 # from Segmentor import portrait_segmentor
 import traceback
+
+import cv2
+
+from .base import base_parser
 
 
 class mask_parser(base_parser):

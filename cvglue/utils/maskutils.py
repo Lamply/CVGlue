@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+
 from .fileutils import check_image_format
-from .imageutils import get_rounded_rect, pad_center, crop_rect, gaussian_kernel
+from .imageutils import crop_rect, gaussian_kernel, get_rounded_rect, pad_center
 
 __all__ = [
     "DoG",
@@ -217,10 +218,10 @@ def select_mask_regoin(mask, limit_box, threshold=0.10):
         box = np.reshape(box, (2, 2))
         box[1] += box[0]
 
-        inter_left = limit_box[0] if limit_box[0] > box[0, 0] else box[0, 0]
-        inter_top = limit_box[1] if limit_box[1] > box[0, 1] else box[0, 1]
-        inter_right = limit_box[2] if limit_box[2] < box[1, 0] else box[1, 0]
-        inter_bottom = limit_box[3] if limit_box[3] < box[1, 1] else box[1, 1]
+        inter_left = max(box[0, 0], limit_box[0])
+        inter_top = max(box[0, 1], limit_box[1])
+        inter_right = min(box[1, 0], limit_box[2])
+        inter_bottom = min(box[1, 1], limit_box[3])
         inter_area = cal_rect_area([inter_left, inter_top, inter_right, inter_bottom])
         iou = inter_area / cal_rect_area(box)
         if iou < threshold:

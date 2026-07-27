@@ -1,5 +1,5 @@
-import torch
 import numpy as np
+import torch
 
 __all__ = [
     "Colorize",
@@ -97,7 +97,7 @@ def labelcolormap(N):
     return cmap
 
 
-class Colorize(object):
+class Colorize:
     def __init__(self, n=35):
         self.cmap = labelcolormap(n)
         self.cmap = torch.from_numpy(self.cmap[:n])
@@ -106,7 +106,7 @@ class Colorize(object):
         size = gray_image.size()
         color_image = torch.ByteTensor(3, size[1], size[2]).fill_(0)
 
-        for label in range(0, len(self.cmap)):
+        for label in range(len(self.cmap)):
             mask = (label == gray_image[0]).cpu()
             color_image[0][mask] = self.cmap[label][0]
             color_image[1][mask] = self.cmap[label][1]

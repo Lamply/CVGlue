@@ -1,20 +1,21 @@
 import os
+
 from .base import base_parser
 
 __all__ = [
     "attribute_parser",
-    "blur_parser",
-    "face_parser",
-    "faceid_parser",
-    "genderage_parser",
-    "landmarks_parser",
-    "quality_parser",
     "attribute_stage",
+    "blur_parser",
     "blur_stage",
+    "face_parser",
     "face_stage",
+    "faceid_parser",
     "faceid_stage",
+    "genderage_parser",
     "genderage_stage",
+    "landmarks_parser",
     "landmarks_stage",
+    "quality_parser",
     "quality_stage",
 ]
 
@@ -64,10 +65,10 @@ class face_stage:
         )
         for i in range(face_cnt):
             face_box = list(dets[i, :4])
-            lx = face_box[0] if face_box[0] > 0 else 0
-            ly = face_box[1] if face_box[1] > 0 else 0
-            rx = face_box[2] if face_box[2] < img.shape[1] else img.shape[1]
-            ry = face_box[3] if face_box[3] < img.shape[0] else img.shape[0]
+            lx = max(0, face_box[0])
+            ly = max(0, face_box[1])
+            rx = min(img.shape[1], face_box[2])
+            ry = min(img.shape[0], face_box[3])
             area_after_fix = cal_face_area((lx, ly, rx, ry))
             area_before_fix = cal_face_area(face_box)
             if area_before_fix > 0:

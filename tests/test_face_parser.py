@@ -1,7 +1,9 @@
 import os
+
 import cv2
-import cvglue
 import numpy as np
+
+import cvglue
 
 llog = cvglue.setup_logger(name=__name__)
 

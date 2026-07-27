@@ -1,7 +1,7 @@
 __all__ = ["base_checker"]
 
 
-class base_checker(object):
+class base_checker:
     def check_image(self, img_raw):
         pass
 

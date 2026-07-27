@@ -1,17 +1,17 @@
-import os
 import glob
+import json
+import os
 import re
 import unicodedata
-import json
-import requests
+from collections.abc import Iterable
+
 import numpy as np
-from typing import Union, List, Set, Iterable
+import requests
 
 try:
-    from deepdiff import DeepDiff
-
     # pip install u-msgpack-python
     import umsgpack
+    from deepdiff import DeepDiff
 except:
     pass
 
@@ -35,6 +35,7 @@ SUPPORTED_IMG_EXTENSIONS = [
 SUPPORTED_VIDEO_EXTENSIONS = [".mp4", ".MP4", ".flv", ".FLV"]
 
 __all__ = [
+    "SUPPORTED_IMG_EXTENSIONS",
     "check_aligned_img_dataset",
     "check_dict_differences",
     "check_grouped_img_dataset",
@@ -46,14 +47,13 @@ __all__ = [
     "get_ext_name",
     "get_file_name",
     "make_dataset",
+    "make_dataset_recursive",
     "make_grouped_dataset",
     "make_structural_dataset",
     "read_json_file",
     "select_subdataset",
     "select_subdataset_idxs",
     "write_json_file",
-    "make_dataset_recursive",
-    "SUPPORTED_IMG_EXTENSIONS",
 ]
 
 
@@ -166,10 +166,10 @@ def make_structural_dataset(root_dir, leaf_depth):
 
 def make_dataset_recursive(
     root_path: str,
-    extensions: Union[str, Iterable[str]],
-    exclude_dirs: Union[Iterable[str], None] = None,
-    exclude_files: Union[Iterable[str], None] = None,
-) -> List[str]:
+    extensions: str | Iterable[str],
+    exclude_dirs: Iterable[str] | None = None,
+    exclude_files: Iterable[str] | None = None,
+) -> list[str]:
     """
     递归获取指定目录下所有包含指定后缀的文件的绝对路径，支持排除特定目录和文件。
 
@@ -185,11 +185,11 @@ def make_dataset_recursive(
         extensions = (extensions,)
     extensions = tuple(ext if ext.startswith(".") else f".{ext}" for ext in extensions)
 
-    exclude_dirs_set: Set[str] = set(exclude_dirs) if exclude_dirs else set()
-    exclude_files_set: Set[str] = set(exclude_files) if exclude_files else set()
+    exclude_dirs_set: set[str] = set(exclude_dirs) if exclude_dirs else set()
+    exclude_files_set: set[str] = set(exclude_files) if exclude_files else set()
 
     root_abs_path = os.path.abspath(root_path)
-    result_paths: List[str] = []
+    result_paths: list[str] = []
 
     # 2. 遍历目录树
     for dirpath, dirnames, filenames in os.walk(root_abs_path):
@@ -254,7 +254,7 @@ def check_aligned_img_dataset(A_paths, B_paths):
         B_name = get_base_name(B_paths[i])
         if A_name != B_name:
             raise ValueError(
-                "A and B names is not aligned: {}, {}".format(A_paths[i], B_paths[i])
+                f"A and B names is not aligned: {A_paths[i]}, {B_paths[i]}"
             )
 
 
@@ -328,8 +328,8 @@ def write_json_file(
 def check_dict_differences(
     src_dict: dict,
     ref_dict: dict,
-    exclude_diff: List[str] = None,
-    exclude_keys: List[str] = None,
+    exclude_diff: list[str] = None,
+    exclude_keys: list[str] = None,
 ) -> None:
     """
     Check the differences between two dictionaries.

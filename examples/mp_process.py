@@ -4,10 +4,12 @@ Notice:
     1. sample checker is not designed for this situation.
 """
 
-import os
 import argparse
-import cvglue
+import os
+
 import iap
+
+import cvglue
 
 
 def parse_args():

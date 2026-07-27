@@ -1,7 +1,8 @@
-import numpy as np
 import cv2
-from ..utils import render_face, render_mask, draw_headpose
+import numpy as np
+
 from ..parser import anno_exists
+from ..utils import draw_headpose, render_face, render_mask
 
 __all__ = ["render_lamply"]
 

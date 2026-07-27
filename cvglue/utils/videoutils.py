@@ -1,8 +1,9 @@
 import cv2
-import numpy as np
 import imageio
+import numpy as np
 from tqdm import tqdm
-from .imageutils import resize_fix, cvt_color
+
+from .imageutils import cvt_color, resize_fix
 
 __all__ = [
     "VideoCaptureWrapper",

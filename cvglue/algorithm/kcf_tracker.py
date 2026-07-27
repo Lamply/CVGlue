@@ -1,6 +1,8 @@
-import numpy as np
 import cv2
+import numpy as np
+
 from . import fhog
+
 # ffttools
 
 __all__ = ["KCFTracker"]
@@ -78,10 +80,8 @@ def limit(rect, limit):
     if rect[1] < limit[1]:
         rect[3] -= limit[1] - rect[1]
         rect[1] = limit[1]
-    if rect[2] < 0:
-        rect[2] = 0
-    if rect[3] < 0:
-        rect[3] = 0
+    rect[2] = max(rect[2], 0)
+    rect[3] = max(rect[3], 0)
     return rect
 
 
@@ -369,10 +369,8 @@ class KCFTracker:
         self._roi[0] = cx - self._roi[2] / 2.0 + loc[0] * self.cell_size * self._scale
         self._roi[1] = cy - self._roi[3] / 2.0 + loc[1] * self.cell_size * self._scale
 
-        if self._roi[0] >= image.shape[1] - 1:
-            self._roi[0] = image.shape[1] - 1
-        if self._roi[1] >= image.shape[0] - 1:
-            self._roi[1] = image.shape[0] - 1
+        self._roi[0] = min(image.shape[1] - 1, self._roi[0])
+        self._roi[1] = min(image.shape[0] - 1, self._roi[1])
         if self._roi[0] + self._roi[2] <= 0:
             self._roi[0] = -self._roi[2] + 2
         if self._roi[1] + self._roi[3] <= 0:

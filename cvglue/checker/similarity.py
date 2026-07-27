@@ -1,7 +1,8 @@
-import torch
 import lpips
-from .base import base_checker
+import torch
+
 from ..utils import to_tensor
+from .base import base_checker
 
 __all__ = ["similarity_checker"]
 

@@ -14,7 +14,7 @@ from collections import Counter
 # from tabulate import tabulate
 from termcolor import colored
 
-__all__ = ["setup_logger", "log_first_n", "log_every_n", "log_every_n_seconds"]
+__all__ = ["log_every_n", "log_every_n_seconds", "log_first_n", "setup_logger"]
 
 CVGLUE_LOG_BUFFER_SIZE_KEY: str = "CVGLUE_LOG_BUFFER_SIZE"
 
@@ -27,11 +27,11 @@ class _ColorfulFormatter(logging.Formatter):
         self._abbrev_name = kwargs.pop("abbrev_name", "")
         if len(self._abbrev_name):
             self._abbrev_name = self._abbrev_name + "."
-        super(_ColorfulFormatter, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     def formatMessage(self, record):
         record.name = record.name.replace(self._root_name, self._abbrev_name)
-        log = super(_ColorfulFormatter, self).formatMessage(record)
+        log = super().formatMessage(record)
         if record.levelno == logging.WARNING:
             prefix = colored("WARNING", "red", attrs=["blink"])
         elif record.levelno == logging.ERROR or record.levelno == logging.CRITICAL:
@@ -41,7 +41,7 @@ class _ColorfulFormatter(logging.Formatter):
         return prefix + " " + log
 
 
-@functools.lru_cache()  # so that calling setup_logger multiple times won't add many handlers
+@functools.lru_cache  # so that calling setup_logger multiple times won't add many handlers
 def setup_logger(
     output=None,
     *,
@@ -113,7 +113,7 @@ def setup_logger(
 
 # cache the opened file object, so that different calls to `setup_logger`
 # with the same file name can safely write to the same file.
-@functools.lru_cache(maxsize=None)
+@functools.cache
 def _cached_log_stream(filename):
     # use 1K buffer if writing to cloud storage
     io = open(filename, "a", buffering=_get_log_stream_buffer_size(filename))

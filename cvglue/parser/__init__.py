@@ -1,20 +1,39 @@
-import PIL.ImageFile
 from typing import Union
+
 import numpy as np
+import PIL.ImageFile
+
+from .base import base_parser
+from .face import (
+    attribute_parser,
+    attribute_stage,
+    blur_parser,
+    blur_stage,
+    face_parser,
+    face_stage,
+    faceid_parser,
+    faceid_stage,
+    genderage_parser,
+    genderage_stage,
+    landmarks_parser,
+    landmarks_stage,
+    quality_parser,
+    quality_stage,
+)
 
 PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True  # avoid "Decompressed Data Too Large" error
 
 __all__ = [
-    "set_image_anno",
     "anno_exists",
-    "get_parser",
-    "face_parser",
-    "landmarks_parser",
-    "blur_parser",
     "attribute_parser",
-    "genderage_parser",
+    "blur_parser",
+    "face_parser",
     "faceid_parser",
+    "genderage_parser",
+    "get_parser",
+    "landmarks_parser",
     "quality_parser",
+    "set_image_anno",
 ]
 
 
@@ -22,7 +41,7 @@ def set_image_anno(base_name, **kwargs):
     return {"name": base_name, **kwargs}
 
 
-def anno_exists(anno: dict, domain: Union[str, list], **kwargs):
+def anno_exists(anno: dict, domain: str | list, **kwargs):
     if isinstance(domain, list):
         logit = [anno_exists(anno, spec) for spec in domain]
         return np.sum(logit) == len(domain)
@@ -32,26 +51,6 @@ def anno_exists(anno: dict, domain: Union[str, list], **kwargs):
         return False
     return True
 
-
-from .base import base_parser
-
-# from .mask import mask_parser
-from .face import (
-    face_parser,
-    landmarks_parser,
-    blur_parser,
-    attribute_parser,
-    genderage_parser,
-    faceid_parser,
-    quality_parser,
-    face_stage,
-    landmarks_stage,
-    blur_stage,
-    attribute_stage,
-    genderage_stage,
-    faceid_stage,
-    quality_stage,
-)
 
 
 def get_parser(version):

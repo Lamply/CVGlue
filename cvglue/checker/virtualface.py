@@ -1,13 +1,15 @@
 import os
+
+import albumentations as Alb
 import cv2
 import numpy as np
-from PIL import Image
 import torch
-import albumentations as Alb
 from albumentations.pytorch.transforms import ToTensorV2
-from ..utils.faceutils import norm_crop
-from ..utils import make_dataset
+from PIL import Image
+
 from ..thirdparty.InsightFace.face_features import FaceFeatures, InsightFace_dir
+from ..utils import make_dataset
+from ..utils.faceutils import norm_crop
 from .base import base_checker
 
 __all__ = ["virtual_face_checker"]

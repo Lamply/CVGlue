@@ -1,7 +1,7 @@
 from .face import (
-    face_detector,
-    landmark_detector,
     attribute_detector,
+    face_detector,
     faceid_detector,
+    landmark_detector,
     quality_detector,
 )

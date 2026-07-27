@@ -1,14 +1,16 @@
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-from sklearn.pipeline import Pipeline
 from sklearn import linear_model
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import PolynomialFeatures, StandardScaler
+
 from .fileutils import check_image_format
 
 SUPPORTED_BOX_FORMAT = ["ltrb", "ltwh", "cxywh", "cw"]
 
 __all__ = [
+    "SUPPORTED_BOX_FORMAT",
     "apply_calibration",
     "apply_mask",
     "apply_mask_merge",
@@ -35,7 +37,6 @@ __all__ = [
     "resize_fix",
     "resize_like",
     "resize_scale",
-    "SUPPORTED_BOX_FORMAT",
 ]
 
 

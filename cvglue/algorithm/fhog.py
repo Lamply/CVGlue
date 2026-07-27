@@ -1,5 +1,5 @@
-import numpy as np
 import cv2
+import numpy as np
 from numba import jit
 
 # constant
@@ -32,7 +32,7 @@ def func1(dx, dy, boundary_x, boundary_y, height, width, numChannels):
             mmax = boundary_x[0] * x + boundary_y[0] * y
             maxi = 0
 
-            for kk in range(0, NUM_SECTOR):
+            for kk in range(NUM_SECTOR):
                 dotProd = boundary_x[kk] * x + boundary_y[kk] * y
                 if dotProd > mmax:
                     mmax = dotProd

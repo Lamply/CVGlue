@@ -4,7 +4,7 @@ import torch
 from matplotlib import pyplot as plt
 
 # from mpl_toolkits.mplot3d import Axes3D
-from ..utils import to_image, check_image_format, scale_min_max
+from ..utils import check_image_format, scale_min_max, to_image
 
 # Run following command before using show() when using classic notebook
 # %matplotlib notebook

@@ -1,6 +1,7 @@
 import numpy as np
-from .base import base_checker
+
 from ..thirdparty.AdaptiveWing import AdaptiveWing
+from .base import base_checker
 
 __all__ = ["landmark_checker"]
 

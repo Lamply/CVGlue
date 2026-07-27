@@ -1,10 +1,11 @@
 import numpy as np
 import torch
 import torch.nn.functional as F
-from .imageutils import warpAffine
-from ..faceutils import cal_eye_dist, generate_contours_mask
+
 from ...thirdparty.AdaptiveWing import AdaptiveWing
 from ...thirdparty.InsightFace.face_align import estimate_norm
+from ..faceutils import cal_eye_dist, generate_contours_mask
+from .imageutils import warpAffine
 
 __all__ = ["cal_ROI_AUC", "cal_ROI_metric", "crop_face_v3_tensor", "norm_crop_tensor"]
 

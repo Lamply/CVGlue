@@ -1,6 +1,7 @@
 import copy
-from ..utils.faceutils import *
+
 from ..parser import set_image_anno
+from ..utils.faceutils import *
 
 __all__ = ["crop_processor"]
 

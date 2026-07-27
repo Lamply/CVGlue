@@ -1,5 +1,6 @@
 import json
 from collections import defaultdict
+
 from .base import base_checker
 
 __all__ = [
@@ -21,7 +22,7 @@ class single_uid_checker(base_checker):
         self.verbose = verbose
 
     def check_data(self, iap_data):
-        uid = iap_data[1][name].split("_")[self.uid_idx]
+        uid = iap_data[1]["name"].split("_")[self.uid_idx]
         if uid not in self.uid_dict or uid == self.exclude:
             self.uid_dict[uid].append(iap_data[1]["name"])
             return True

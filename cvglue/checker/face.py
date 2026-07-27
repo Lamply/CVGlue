@@ -1,4 +1,5 @@
 import numpy as np
+
 from ..detector import face_detector
 from .base import base_checker
 
@@ -40,5 +41,5 @@ class face_checker(base_checker):
                 if self.check_num >= 0
                 else len(iap_data[1]["faces"])
             )
-        except:
+        except Exception:
             return False if self.check_num >= 0 else 0

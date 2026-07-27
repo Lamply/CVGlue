@@ -1,6 +1,7 @@
 import os
-from ..utils.datautils import to_tensor, to_image
+
 from ..thirdparty.FBCNN import FBCNNProcessor
+from ..utils.datautils import to_image, to_tensor
 from ..utils.logger import setup_logger
 
 __all__ = ["jpeg_restore_processor"]

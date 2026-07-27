@@ -1,7 +1,8 @@
 import cv2
 import numpy as np
+
+from ..utils.faceutils import crop_face_v3, generate_face_mask, warp_landmarks
 from .base import base_checker
-from ..utils.faceutils import warp_landmarks, crop_face_v3, generate_face_mask
 
 __all__ = ["blur_checker"]
 

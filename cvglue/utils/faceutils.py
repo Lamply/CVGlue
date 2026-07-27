@@ -1,11 +1,13 @@
 import copy
+
 import cv2
 import numpy as np
-from skimage import transform as trans
 from scipy.spatial import Delaunay
-from .imageutils import cvt_box_format, pad_rect, cal_bounding_rect, apply_mask_merge
-from .maskutils import generate_contours_mask
+from skimage import transform as trans
+
+from .imageutils import apply_mask_merge, cal_bounding_rect, cvt_box_format, pad_rect
 from .logger import setup_logger
+from .maskutils import generate_contours_mask
 
 try:
     pass
@@ -913,11 +915,11 @@ def generate_face_mask(
 
     if remove_ROI:
         contours = []
-        contours += [np.int64((boundaries["eyebrow_left"]))]
-        contours += [np.int64((boundaries["eyebrow_right"]))]
-        contours += [np.int64((boundaries["eyelid_left"]))]
-        contours += [np.int64((boundaries["eyelid_right"]))]
-        contours += [np.int64((boundaries["lip_outer"]))]
+        contours += [np.int64(boundaries["eyebrow_left"])]
+        contours += [np.int64(boundaries["eyebrow_right"])]
+        contours += [np.int64(boundaries["eyelid_left"])]
+        contours += [np.int64(boundaries["eyelid_right"])]
+        contours += [np.int64(boundaries["lip_outer"])]
         remove_mask_ROI = 1.0 - generate_contours_mask(
             src_height, src_width, contours, blur=blur, dilate=dilate
         )
