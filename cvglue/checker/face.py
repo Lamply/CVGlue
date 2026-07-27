@@ -1,18 +1,22 @@
-import os
-import cv2
 import numpy as np
 from ..detector import face_detector
 from .base import base_checker
-import functools
 
 __all__ = ["face_checker"]
 
 
 class face_checker(base_checker):
-    def __init__(self, check_num=-1, threshold=0.6, use_detector=True, detect_mode='selfie', verbose=False):
-        '''
-            detect_mode(str):       'selfie': best performance when faces are close to camera, but more likely to misdetect in small object
-        '''
+    def __init__(
+        self,
+        check_num=-1,
+        threshold=0.6,
+        use_detector=True,
+        detect_mode="selfie",
+        verbose=False,
+    ):
+        """
+        detect_mode(str):       'selfie': best performance when faces are close to camera, but more likely to misdetect in small object
+        """
         super().__init__()
         self.check_num = check_num
         self.threshold = threshold
@@ -31,6 +35,10 @@ class face_checker(base_checker):
 
     def check_data(self, iap_data):
         try:
-            return len(iap_data[1]['faces']) == self.check_num if self.check_num >= 0 else len(iap_data[1]['faces'])
+            return (
+                len(iap_data[1]["faces"]) == self.check_num
+                if self.check_num >= 0
+                else len(iap_data[1]["faces"])
+            )
         except:
             return False if self.check_num >= 0 else 0

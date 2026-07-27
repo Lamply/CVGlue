@@ -1,7 +1,6 @@
 import os.path
 import logging
 import numpy as np
-from datetime import datetime
 from collections import OrderedDict
 import torch
 import cv2

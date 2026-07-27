@@ -5,5 +5,3 @@ from . import displayer as display
 from . import detector
 from . import checker
 from . import thirdparty
-
-__version__ = '1.3.0'

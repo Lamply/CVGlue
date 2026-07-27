@@ -9,7 +9,7 @@ __all__ = ["similarity_checker"]
 class similarity_checker(base_checker):
     def __init__(self, threshold=0.08, verbose=False):
         super().__init__()
-        self.loss_fn = lpips.LPIPS(net='alex')
+        self.loss_fn = lpips.LPIPS(net="alex")
         self.loss_fn.cuda().eval()
         self.verbose = verbose
         self.threshold = threshold

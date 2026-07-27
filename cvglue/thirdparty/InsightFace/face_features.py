@@ -1,11 +1,11 @@
 import os
 import torch
 from torch import nn
-import torch.nn.functional as F
 from .mobilefacenet import MobileFaceNet
 from .model_irse import Backbone
 
 InsightFace_dir = os.path.dirname(os.path.abspath(__file__))
+
 
 class FaceFeatures(nn.Module):
     def __init__(self, model_name):
@@ -16,9 +16,19 @@ class FaceFeatures(nn.Module):
         if model_name == "model_ir_se50":
             weights_path = os.path.join(os.environ["TORCH_HOME"], "model_ir_se50.pth")
         else:
-            weights_path = os.path.join(InsightFace_dir, model_name+'.pth')
-        self.model = MobileFaceNet(512) if model_name == 'model_mobilefacenet' else Backbone(input_size=112, num_layers=50, drop_ratio=0.6, mode='ir_se')
-        self.model.load_state_dict(torch.load(weights_path, map_location=lambda storage, loc: storage, weights_only=True))
+            weights_path = os.path.join(InsightFace_dir, model_name + ".pth")
+        self.model = (
+            MobileFaceNet(512)
+            if model_name == "model_mobilefacenet"
+            else Backbone(input_size=112, num_layers=50, drop_ratio=0.6, mode="ir_se")
+        )
+        self.model.load_state_dict(
+            torch.load(
+                weights_path,
+                map_location=lambda storage, loc: storage,
+                weights_only=True,
+            )
+        )
         self.model.eval()
         self.face_pool = torch.nn.AdaptiveAvgPool2d((112, 112))
 
@@ -31,12 +41,17 @@ class FaceFeatures(nn.Module):
         # left = int(w / 2 - size / 2)
         # right = left + size
         # batch_tensor = batch_tensor[:, :, top: bottom, left: right]
-        x = self.face_pool(batch_tensor) if batch_tensor.shape[2] != 112 else batch_tensor
+        x = (
+            self.face_pool(batch_tensor)
+            if batch_tensor.shape[2] != 112
+            else batch_tensor
+        )
         features = self.model(x)
         return features
 
     def cosine_distance(self, batch_tensor1, batch_tensor2):
         feature1 = self.forward(batch_tensor1)
         feature2 = self.forward(batch_tensor2)
-        return 1 - torch.cosine_similarity(feature1, feature2)  # same as 1 - feature1[i].dot(feature2[i])
-        
+        return 1 - torch.cosine_similarity(
+            feature1, feature2
+        )  # same as 1 - feature1[i].dot(feature2[i])

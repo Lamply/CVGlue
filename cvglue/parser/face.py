@@ -1,24 +1,39 @@
 import os
-import cv2
 from .base import base_parser
 
-__all__ = ["attribute_parser", "blur_parser", "face_parser", "faceid_parser", 
-           "genderage_parser", "landmarks_parser", "quality_parser",
-           "attribute_stage", "blur_stage", "face_stage", "faceid_stage", 
-           "genderage_stage", "landmarks_stage", "quality_stage"]
+__all__ = [
+    "attribute_parser",
+    "blur_parser",
+    "face_parser",
+    "faceid_parser",
+    "genderage_parser",
+    "landmarks_parser",
+    "quality_parser",
+    "attribute_stage",
+    "blur_stage",
+    "face_stage",
+    "faceid_stage",
+    "genderage_stage",
+    "landmarks_stage",
+    "quality_stage",
+]
 
 
 class face_stage:
-    def __init__(self, method='lamply', mode='selfie', **kwargs):
-        if method == 'lamply':
+    def __init__(self, method="lamply", mode="selfie", **kwargs):
+        if method == "lamply":
             self.set_lamply_detector(mode, **kwargs)
         elif method == "insightface":
             self.set_insightface_detector()
         else:
-            raise NotImplementedError('method %s is not implemented, choose one of [lamply, insightface]' % method)
+            raise NotImplementedError(
+                "method %s is not implemented, choose one of [lamply, insightface]"
+                % method
+            )
 
     def set_lamply_detector(self, mode, **kwargs):
         from ..detector import face_detector
+
         self.fd = face_detector(detect_mode=mode, **kwargs)
         self.detect_func = self.face_bbox_keypoints_detector
 
@@ -26,7 +41,7 @@ class face_stage:
         from insightface.app import FaceAnalysis
 
         self.app = FaceAnalysis(
-            root=os.environ['TORCH_HOME'],
+            root=os.environ["TORCH_HOME"],
             providers=["CUDAExecutionProvider"],
         )
         self.app.prepare(ctx_id=0)
@@ -155,8 +170,8 @@ def attribute_parser(method="headpose"):
 
 
 class genderage_stage:
-    def __init__(self, method='insightface'):
-        if method == 'insightface':
+    def __init__(self, method="insightface"):
+        if method == "insightface":
             self.set_genderage_detector()
         else:
             raise NotImplementedError(
@@ -167,7 +182,9 @@ class genderage_stage:
         import insightface
         from insightface.app import FaceAnalysis
 
-        self.app = FaceAnalysis(root=os.environ['TORCH_HOME'], providers=["CUDAExecutionProvider"])
+        self.app = FaceAnalysis(
+            root=os.environ["TORCH_HOME"], providers=["CUDAExecutionProvider"]
+        )
         self.app.prepare(ctx_id=0)
         self.face_dict = insightface.app.common.Face({"bbox": None})
         self.detect_func = self.face_genderage_detector
@@ -195,17 +212,20 @@ def genderage_parser(method="insightface"):
 
 
 class faceid_stage:
-    def __init__(self, method='insightface'):
-        if method == 'insightface':
+    def __init__(self, method="insightface"):
+        if method == "insightface":
             self.set_faceid_detector()
         else:
-            raise NotImplementedError('method %s is not implemented, choose one of [headpose]' % method)
+            raise NotImplementedError(
+                "method %s is not implemented, choose one of [headpose]" % method
+            )
 
     def set_faceid_detector(self):
         from ..detector import faceid_detector
-        self.faid_detector = faceid_detector('model_ir_se50')
+
+        self.faid_detector = faceid_detector("model_ir_se50")
         self.detect_func = self.face_id_detector
-        
+
     def __call__(self, img, context_dict):
         return self.detect_func(img, context_dict)
 
@@ -215,7 +235,9 @@ class faceid_stage:
             base_name = context_dict.get("name", "")
             update_dict = context_dict.get("faces", [])
             for face in update_dict:
-                face['faceid'] = self.faid_detector(img, face['key_points']).flatten().tolist()
+                face["faceid"] = (
+                    self.faid_detector(img, face["key_points"]).flatten().tolist()
+                )
         except Exception as e:
             print(f"WARNING: {base_name} faceid stage failed: {e}")
         return {}
@@ -226,14 +248,17 @@ def faceid_parser(method="insightface"):
 
 
 class blur_stage:
-    def __init__(self, method='opencv'):
-        if method == 'opencv':
+    def __init__(self, method="opencv"):
+        if method == "opencv":
             self.set_blur_detector()
         else:
-            raise NotImplementedError('method %s is not implemented, choose one of [insightface]' % method)
+            raise NotImplementedError(
+                "method %s is not implemented, choose one of [insightface]" % method
+            )
 
     def set_blur_detector(self):
         from ..checker import blur_checker
+
         self.blur_detector = blur_checker()
         self.detect_func = self.blur_detect
 
@@ -245,7 +270,7 @@ class blur_stage:
             update_dict = context_dict.get("faces", [])
             for face in update_dict:
                 self.blur_detector.check_image(img, face)
-                face['blurriness'] = self.blur_detector.score
+                face["blurriness"] = self.blur_detector.score
         except:
             pass
         return {}
@@ -256,15 +281,18 @@ def blur_parser(method="opencv"):
 
 
 class quality_stage:
-    def __init__(self, method='tface'):
-        if method == 'tface':
+    def __init__(self, method="tface"):
+        if method == "tface":
             self.set_face_quality_detector()
         else:
-            raise NotImplementedError('method %s is not implemented, choose one of [headpose]' % method)
+            raise NotImplementedError(
+                "method %s is not implemented, choose one of [headpose]" % method
+            )
 
     def set_face_quality_detector(self):
         from ..detector import quality_detector
-        self.qd = quality_detector('r50')
+
+        self.qd = quality_detector("r50")
         self.detect_func = self.face_quality_detector
 
     def __call__(self, img, context_dict):

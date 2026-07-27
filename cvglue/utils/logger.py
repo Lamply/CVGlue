@@ -1,6 +1,7 @@
 """
 Mainly from https://github.com/facebookresearch/detectron2
 """
+
 import atexit
 import functools
 import logging
@@ -8,6 +9,7 @@ import os
 import sys
 import time
 from collections import Counter
+
 # import torch
 # from tabulate import tabulate
 from termcolor import colored
@@ -47,7 +49,7 @@ def setup_logger(
     name="cvglue",
     abbrev_name=None,
     enable_propagation: bool = False,
-    configure_stdout: bool = True
+    configure_stdout: bool = True,
 ):
     """
     Initialize logger and set its verbosity level to "DEBUG".
