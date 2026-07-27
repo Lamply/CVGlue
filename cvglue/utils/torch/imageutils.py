@@ -275,14 +275,14 @@ def resize_fix_tensor(src_img, dst_h, dst_w, flag="pad"):
 
     if src_ratio > dst_ratio:
         if flag == "crop":
-            align_flag = 1
+            # align_flag = 1
             resize_img = resize_scale_tensor(
                 src_img, align_length=dst_w, align_flag="width"
             )
             crop_start = int((resize_img.shape[2] - dst_h) / 2)
             fixed_img = resize_img[:, :, crop_start : crop_start + dst_h, :]
         elif flag == "pad":
-            align_flag = 0
+            # align_flag = 0
             resize_img = resize_scale_tensor(
                 src_img, align_length=dst_h, align_flag="height"
             )
@@ -296,14 +296,14 @@ def resize_fix_tensor(src_img, dst_h, dst_w, flag="pad"):
             return
     else:
         if flag == "crop":
-            align_flag = 0
+            # align_flag = 0
             resize_img = resize_scale_tensor(
                 src_img, align_length=dst_h, align_flag="height"
             )
             crop_start = int((resize_img.shape[3] - dst_w) / 2)
             fixed_img = resize_img[:, :, :, crop_start : crop_start + dst_w]
         elif flag == "pad":
-            align_flag = 1
+            # align_flag = 1
             resize_img = resize_scale_tensor(
                 src_img, align_length=dst_w, align_flag="width"
             )

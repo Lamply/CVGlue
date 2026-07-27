@@ -12,7 +12,7 @@ try:
     # pip install u-msgpack-python
     import umsgpack
     from deepdiff import DeepDiff
-except:
+except:  # noqa: E722
     pass
 
 from .logger import setup_logger
@@ -72,7 +72,7 @@ def get_base_name(file_path):
 def get_ext_name(file_path):
     try:
         ext_name = os.path.splitext(file_path)[-1]
-    except:
+    except Exception:
         ext_name = None
     return ext_name
 

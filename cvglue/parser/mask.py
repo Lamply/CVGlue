@@ -20,7 +20,7 @@ class mask_parser(base_parser):
     def set_mask_detector(self, mask_mode="portrait"):
         self.mask_mode = mask_mode
         if self.mask_mode == "portrait":
-            from detectron2_proj import instance_segmentor
+            from detectron2_proj import instance_segmentor  # type: ignore
 
             # self.segmentor = portrait_segmentor()
             self.segmentor = instance_segmentor()

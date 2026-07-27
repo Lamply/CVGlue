@@ -3,7 +3,7 @@ import torch
 import torch.nn.functional as F
 
 from ...thirdparty.AdaptiveWing import AdaptiveWing
-from ...thirdparty.InsightFace.face_align import estimate_norm
+from ...thirdparty.InsightFace.face_align import arcface_src, estimate_norm, src_map
 from ..faceutils import cal_eye_dist, generate_contours_mask
 from .imageutils import warpAffine
 
@@ -132,7 +132,6 @@ def crop_face_v3_tensor(
         raise ValueError("key points shape", keypoints.shape, "error.")
 
     eye_avg = (eye_left + eye_right) * 0.5
-    eye_to_eye = eye_right - eye_left
     mouth_avg = (mouth_left + mouth_right) * 0.5
     eye_to_mouth = mouth_avg - eye_avg
     use_chin = kwargs.get("use_chin", False)

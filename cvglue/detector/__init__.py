@@ -5,3 +5,11 @@ from .face import (
     landmark_detector,
     quality_detector,
 )
+
+__all__ = [
+    "attribute_detector",
+    "face_detector",
+    "faceid_detector",
+    "landmark_detector",
+    "quality_detector",
+]

@@ -35,8 +35,8 @@ import cv2
 import cvglue
 from cvglue import displayer as display
 
-parser = cvglue.parser.get_parser('lamply-faceid')
-img = cv2.imread('tests/data/images/single_face_img.jpg')
+parser = cvglue.parser.get_parser("lamply-faceid")
+img = cv2.imread("tests/data/images/single_face_img.jpg")
 
 anno = parser.parse_img(img)
 iap_data = (img, anno)

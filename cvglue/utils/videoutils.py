@@ -28,7 +28,7 @@ class VideoCaptureWrapper:
 
     def get_frame(self, frame_id):
         self.capture.set(cv2.CAP_PROP_POS_FRAMES, int(frame_id))
-        ret, frame = self.capture.read()
+        _, frame = self.capture.read()
         return frame
 
     def __len__(self):
@@ -72,8 +72,8 @@ def perframe_process(in_video, out_video, process_fn, out_fps=0):
     capture = cv2.VideoCapture(in_video)
     frame_count = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
     fps = int(capture.get(cv2.CAP_PROP_FPS))
-    height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
+    # height = int(capture.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    # width = int(capture.get(cv2.CAP_PROP_FRAME_WIDTH))
 
     out_fps = fps if out_fps == 0 else out_fps
     _, frame = capture.read()
@@ -149,9 +149,9 @@ def merge_video(input_videos, start_positions, end_positions):
                     cv2.CAP_PROP_POS_FRAMES,
                     int(start_positions[i] + diff_rate[i] * frame_n),
                 )
-                ret, frame = captures[i].read()
+                _, frame = captures[i].read()
             else:
-                ret, frame = captures[i].read()
+                _, frame = captures[i].read()
             merge_frame += [frame]
         merge_frame = np.concatenate(merge_frame, axis=1)
         videoWriter.write(merge_frame)

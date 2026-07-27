@@ -1,7 +1,13 @@
 import copy
 
 from ..parser import set_image_anno
-from ..utils.faceutils import *
+from ..utils.faceutils import (
+    crop_face_v3,
+    crop_face_v4,
+    norm_crop,
+    warp_face_box,
+    warp_landmarks,
+)
 
 __all__ = ["crop_processor"]
 

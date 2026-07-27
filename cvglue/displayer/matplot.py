@@ -19,7 +19,9 @@ def img2display(img, format="CV_BGR", func=None, idx=0):
         auto_scaling = True
         func = None
     elif func == "log":
-        func = lambda x: np.log1p(np.abs(x))
+
+        def func(x):
+            return np.log1p(np.abs(x))
     elif func is not None:
         preserve = True
 

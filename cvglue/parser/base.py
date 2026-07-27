@@ -63,8 +63,8 @@ class base_parser:
         capture = cv2.VideoCapture(video_path)
         frame_count = int(capture.get(cv2.CAP_PROP_FRAME_COUNT))
         for frame_id in trange(frame_count):
-            ret, frame = capture.read()
-            anno = self.parse_img(frame, name=str(frame_id))
+            _, frame = capture.read()
+            _ = self.parse_img(frame, name=str(frame_id))
         capture.release()
         self.saving_json()
 

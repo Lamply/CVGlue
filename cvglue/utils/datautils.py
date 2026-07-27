@@ -102,13 +102,13 @@ def get_random_data(dataset, func=None, out_size=None, out_format="BGR"):
         randnum = np.random.randint(0, frame_count, 1)[0]
         data_name = dataset
         capture.set(cv2.CAP_PROP_POS_FRAMES, randnum)
-        ret, test_img = capture.read()
+        _, test_img = capture.read()
     else:
         randnum = np.random.randint(0, len(dataset), 1)[0]
         try:
             data_name = dataset[randnum]
             test_img = cv2.imread(data_name)
-        except:
+        except Exception:
             data_name = ""
             test_img = dataset[randnum]
 

@@ -1,5 +1,6 @@
 import os
 
+from ..utils import setup_logger
 from .base import base_parser
 
 __all__ = [
@@ -18,6 +19,8 @@ __all__ = [
     "quality_parser",
     "quality_stage",
 ]
+
+llog = setup_logger(name=__name__)
 
 
 class face_stage:
@@ -39,7 +42,7 @@ class face_stage:
         self.detect_func = self.face_bbox_keypoints_detector
 
     def set_insightface_detector(self):
-        from insightface.app import FaceAnalysis
+        from insightface.app import FaceAnalysis  # type: ignore
 
         self.app = FaceAnalysis(
             root=os.environ["TORCH_HOME"],
@@ -57,12 +60,12 @@ class face_stage:
             dets = self.fd(img)
             face_cnt = dets.shape[0] if len(dets) > 0 else 0
         except Exception as e:
-            print(f"WARNING: face_bbox_keypoints_detector failed with: {e}")
+            llog.warning(f"face_bbox_keypoints_detector failed with: {e}")
             return {}
 
-        cal_face_area = lambda face_box: (
-            (face_box[2] - face_box[0]) * (face_box[3] - face_box[1])
-        )
+        def cal_face_area(face_box):
+            return (face_box[2] - face_box[0]) * (face_box[3] - face_box[1])
+
         for i in range(face_cnt):
             face_box = list(dets[i, :4])
             lx = max(0, face_box[0])
@@ -90,7 +93,7 @@ class face_stage:
         try:
             face_list = self.app.get(img)
         except Exception as e:
-            print(repr(e))
+            llog.warning(repr(e))
             return {}
         return {"faces": face_list}
 
@@ -127,7 +130,7 @@ class landmarks_stage:
                 lands = self.ld(img, face_box)
                 face["landmarks"] = lands.tolist()
         except Exception as e:
-            print(f"WARNING: {base_name} landmarks stage failed: {e}")
+            llog.warning(f"WARNING: {base_name} landmarks stage failed: {e}")
         return {}
 
 
@@ -162,7 +165,7 @@ class attribute_stage:
                 headpose_pyr = self.ad(img, face["face_box"])
                 face["headpose"] = headpose_pyr
         except Exception as e:
-            print(f"WARNING: {base_name} attribute stage failed: {e}")
+            llog.warning(f"WARNING: {base_name} attribute stage failed: {e}")
         return {}
 
 
@@ -180,8 +183,8 @@ class genderage_stage:
             )
 
     def set_genderage_detector(self):
-        import insightface
-        from insightface.app import FaceAnalysis
+        import insightface  # type: ignore
+        from insightface.app import FaceAnalysis  # type: ignore
 
         self.app = FaceAnalysis(
             root=os.environ["TORCH_HOME"], providers=["CUDAExecutionProvider"]
@@ -204,7 +207,7 @@ class genderage_stage:
                 face["gender"] = int(gender)
                 face["age"] = int(age)
         except Exception as e:
-            print(f"WARNING: {base_name} genderage stage failed: {e}")
+            llog.warning(f"WARNING: {base_name} genderage stage failed: {e}")
         return {}
 
 
@@ -240,7 +243,7 @@ class faceid_stage:
                     self.faid_detector(img, face["key_points"]).flatten().tolist()
                 )
         except Exception as e:
-            print(f"WARNING: {base_name} faceid stage failed: {e}")
+            llog.warning(f"WARNING: {base_name} faceid stage failed: {e}")
         return {}
 
 
@@ -268,12 +271,13 @@ class blur_stage:
 
     def blur_detect(self, img, context_dict):
         try:
+            base_name = context_dict.get("name", "")
             update_dict = context_dict.get("faces", [])
             for face in update_dict:
                 self.blur_detector.check_image(img, face)
                 face["blurriness"] = self.blur_detector.score
-        except:
-            pass
+        except Exception as e:
+            llog.warning(f"WARNING: {base_name} blur stage failed: {e}")
         return {}
 
 
@@ -307,7 +311,7 @@ class quality_stage:
             for face in update_dict:
                 face["quality"] = self.qd(img, face["key_points"]).item()
         except Exception as e:
-            print(f"WARNING: {base_name} quality stage failed: {e}")
+            llog.warning(f"WARNING: {base_name} quality stage failed: {e}")
         return {}
 
 

@@ -12,7 +12,7 @@ keywords = [
     "computer vision"
 ]
 readme = "README.md"
-requires-python = ">=3.6"
+requires-python = ">=3.9"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -74,4 +74,10 @@ lint = "ruff check ."
 format = "ruff format ."
 
 [tool.ruff]
-exclude = ["cvglue/thirdparty"]
+exclude = ["cvglue/thirdparty", "examples"]
+
+[tool.ruff.lint.per-file-ignores]
+"**.py" = ["EXE002"]
+"cvglue/__init__.py" = ["F401", "F403"]
+"cvglue/utils/__init__.py" = ["F403"]
+

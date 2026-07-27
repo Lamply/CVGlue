@@ -21,5 +21,5 @@ __all__ = [
     "sample_once_checker",
     "similarity_checker",
     "single_uid_checker",
-    "virtual_face_checker"
+    "virtual_face_checker",
 ]

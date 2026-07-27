@@ -87,7 +87,7 @@ def draw_headpose(
     yaw = -(yaw * np.pi / 180)
     roll = roll * np.pi / 180
 
-    if face_box != None:
+    if face_box is not None:
         tdx = (face_box[2] - face_box[0]) // 2 + face_box[0]
         tdy = (face_box[3] - face_box[1]) // 2 + face_box[1]
     else:
@@ -597,7 +597,6 @@ def crop_face_v3(img, keypoints, landmarks, rotate=True, output_size=None, **kwa
         raise ValueError("key points shape", keypoints.shape, "error.")
 
     eye_avg = (eye_left + eye_right) * 0.5
-    eye_to_eye = eye_right - eye_left
     mouth_avg = (mouth_left + mouth_right) * 0.5
     eye_to_mouth = mouth_avg - eye_avg
     use_chin = kwargs.get("use_chin", False)
@@ -756,7 +755,6 @@ def crop_face_v4(
         keypoints = np.reshape(keypoints, [-1, 2])
         eye_left = keypoints[0]
         eye_right = keypoints[1]
-        eye_avg = (eye_left + eye_right) * 0.5
         eye_to_eye = eye_right - eye_left
         rad = np.arctan2(eye_to_eye[1], eye_to_eye[0])
         angle = 180 * rad / np.pi

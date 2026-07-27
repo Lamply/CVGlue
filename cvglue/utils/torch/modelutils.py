@@ -1,4 +1,3 @@
-import sys
 from collections import OrderedDict
 
 import torch
@@ -11,16 +10,21 @@ def load_network(
 ):
     if isinstance(pretrained, str):
         if load_cuda:
-            map_func = lambda storage, loc: storage.cuda(local_rank)
+
+            def map_func(storage, loc):
+                return storage.cuda(local_rank)
         else:
-            map_func = lambda storage, loc: storage
+
+            def map_func(storage, loc):
+                return storage
+
         pretrained_dict = torch.load(
             pretrained, map_location=map_func, weights_only=True
         )
     elif isinstance(pretrained, OrderedDict):
         pretrained_dict = pretrained
     else:
-        raise ValueError(
+        raise TypeError(
             f"Pretrained expected str or OrderedDict, but got {type(pretrained)}."
         )
 
@@ -29,25 +33,19 @@ def load_network(
             print("Loaded nn.Module instead of StateDict.")
         return
     elif isinstance(pretrained_dict, OrderedDict):
-        pretrained_dict = pretrained_dict
+        pass
     else:
-        raise ValueError(
+        raise TypeError(
             f"pretrained should be either StateDict or nn.Module file, but got {type(pretrained_dict)}."
         )
 
-    if sys.version_info >= (3, 0):
-        not_initialized = set()
-        not_used = set()
-    else:
-        from sets import Set
-
-        not_initialized = Set()
-        not_used = Set()
+    not_initialized = set()
+    not_used = set()
 
     try:
         network.load_state_dict(pretrained_dict)
         if verbose and rank == 0:
-            print("Load model success from %s" % pretrained)
+            print(f"Load model success from {pretrained}.")
     except RuntimeError:
         model_dict = network.state_dict()
         try:

@@ -179,7 +179,10 @@ def select_mask_area(mask, select_area=None, largest=False, method="pixel"):
     if method == "pixel":
         cons_area = [cv2.contourArea(contour) for contour in contours[0]]
     elif method == "rect":
-        times_func = lambda x: x[2] * x[3]
+
+        def times_func(x):
+            return x[2] * x[3]
+
         cons_area = [times_func(cv2.boundingRect(contour)) for contour in contours[0]]
     if select_area:
         _ = [

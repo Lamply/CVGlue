@@ -322,7 +322,7 @@ def fill_roi_image(src_image, roi_images, boxes):
     mask_img = np.zeros_like(src_image, dtype=np.float32)
     mask_cnt = np.zeros_like(src_image, dtype=np.float32)
     for rimg, box in zip(roi_images, boxes):
-        l, t, r, b = box
+        l, t, r, b = box  # noqa: E741
         mask_img[t:b, l:r] += rimg
         mask_cnt[t:b, l:r] += 1.0
     src_mask = np.float32(mask_cnt == 0)
@@ -603,7 +603,7 @@ def resize_fix(
 
     if src_ratio > dst_ratio:
         if flag == "crop":
-            align_flag = 1
+            # align_flag = 1
             resize_img = resize_scale(
                 src_img, align_length=dst_w, align_flag="width", interp=interp
             )
@@ -615,7 +615,7 @@ def resize_fix(
             else:
                 raise NotImplementedError('position "%s" not avaliable' % position)
         elif flag == "pad":
-            align_flag = 0
+            # align_flag = 0
             resize_img = resize_scale(
                 src_img, align_length=dst_h, align_flag="height", interp=interp
             )
@@ -640,7 +640,7 @@ def resize_fix(
             return
     else:
         if flag == "crop":
-            align_flag = 0
+            # align_flag = 0
             resize_img = resize_scale(
                 src_img, align_length=dst_h, align_flag="height", interp=interp
             )
@@ -652,7 +652,7 @@ def resize_fix(
             else:
                 raise NotImplementedError('position "%s" not avaliable' % position)
         elif flag == "pad":
-            align_flag = 1
+            # align_flag = 1
             resize_img = resize_scale(
                 src_img, align_length=dst_w, align_flag="width", interp=interp
             )

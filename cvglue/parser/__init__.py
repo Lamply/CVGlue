@@ -52,7 +52,6 @@ def anno_exists(anno: dict, domain: str | list, **kwargs):
     return True
 
 
-
 def get_parser(version):
     if "lamply" in version:
         if "faceid" in version:
