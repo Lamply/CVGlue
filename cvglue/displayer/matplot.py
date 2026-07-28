@@ -80,8 +80,7 @@ def show(
     """
     if len(images) > 100:
         raise ValueError(
-            "Display too many images (%d) is significant slow, please check inputs"
-            % len(images)
+            f"Display too many images ({len(images)}) is significant slow, please check inputs"
         )
 
     figsize = (
@@ -106,12 +105,11 @@ def show(
             plt.colorbar()
     else:
         raise TypeError(
-            "Error input args type: type(images)=%s, expected: images=[img1, img2]"
-            % type(images)
+            f"Error input 	args type: type(images)={type(images)}, expected: images=[img1, img2]"
         )
 
 
-def plot_3d_surfaces(images, names, cmap="rainbow", figsize=[8, 6]):
+def plot_3d_surfaces(images, names, cmap="rainbow", figsize=None):
     """
     Plot a set of 3D surface plots in a grid using the images provided.
 
@@ -126,6 +124,8 @@ def plot_3d_surfaces(images, names, cmap="rainbow", figsize=[8, 6]):
     Returns:
         None
     """
+    if figsize is None:
+        figsize = [8, 6]
     fig = plt.figure(figsize=figsize)
     num_images = len(images)
     num_rows = np.ceil(np.sqrt(num_images)).astype(int)
@@ -141,3 +141,4 @@ def plot_3d_surfaces(images, names, cmap="rainbow", figsize=[8, 6]):
 
     plt.tight_layout()
     plt.show()
+

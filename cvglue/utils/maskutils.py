@@ -121,7 +121,7 @@ def crop_contours(image, contours):
 
 
 def render_mask(
-    img, mask, alpha=0.3, thres=0.5, color=[255, 144, 30], norm_mask=True, matting=False
+    img, mask, alpha=0.3, thres=0.5, color=None, norm_mask=True, matting=False
 ):
     """Render a mask on an image using alpha blending.
 
@@ -144,6 +144,8 @@ def render_mask(
         mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
         output = render_mask(img, mask, alpha=0.5)
     """
+    if color is None:
+        color = [255, 144, 30]
     img = check_image_format(img, allow_float=True).astype(np.float32)
     mask = check_image_format(mask, allow_float=True).astype(np.float32)
     src_img = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR) if img.shape[-1] == 1 else img

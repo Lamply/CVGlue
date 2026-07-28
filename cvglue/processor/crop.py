@@ -18,7 +18,7 @@ class crop_processor:
         self.params = params
         if parser_version.split("-")[0] != "lamply":
             raise NotImplementedError(
-                "parser version %s not supported" % parser_version
+                f"parser version {parser_version} not supported"
             )
 
         def process_func(iap_data):
@@ -39,7 +39,7 @@ class crop_processor:
                         iap_data[0], face["key_points"], **params
                     )
                 else:
-                    raise NotImplementedError("Method %s is not implemented" % method)
+                    raise NotImplementedError(f"Method {method} is not implemented")
                 cropped_face = copy.deepcopy(face)
                 cropped_face["face_box"] = list(
                     warp_face_box(

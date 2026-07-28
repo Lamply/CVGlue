@@ -22,10 +22,7 @@ class landmark_checker(base_checker):
         self.kp_res = np.sqrt(np.sum((ld_kp - fd_kp) ** 2, axis=-1))
         if self.verbose:
             print(self.kp_res, self.rtol * eye_dist)
-        if np.max(self.kp_res) < self.rtol * eye_dist:
-            return True
-        else:
-            return False
+        return np.max(self.kp_res) < self.rtol * eye_dist
 
     def check_data(self, iap_data):
         """Check whether landmarks are relaiable.

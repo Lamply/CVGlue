@@ -41,5 +41,5 @@ class face_checker(base_checker):
                 if self.check_num >= 0
                 else len(iap_data[1]["faces"])
             )
-        except Exception:
+        except (AttributeError, KeyError):
             return False if self.check_num >= 0 else 0

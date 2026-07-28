@@ -239,7 +239,7 @@ def resize_scale_tensor(
                 src_img, size=(align_h, align_length), mode=interp
             )
         else:
-            print("resize_scale(): unkown align_flag %s" % align_flag)
+            print(f"resize_scale(): unkown align_flag {align_flag}")
             return
     elif scale != 1.0:
         align_w = int(src_img.shape[3] * scale)
@@ -335,4 +335,4 @@ def crop_tensor(img, shape, position="ssss"):
     elif position == "eeee":
         return img[-shape[0] :, -shape[1] :, -shape[2] :, -shape[3] :]
     else:
-        raise NotImplementedError("%s not implemented" % position)
+        raise NotImplementedError(f"{position} not implemented")

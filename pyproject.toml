@@ -12,13 +12,17 @@ keywords = [
     "computer vision"
 ]
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.10"
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Topic :: Scientific/Engineering :: Artificial Intelligence",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Operating System :: OS Independent",
 ]
 dependencies = [
@@ -80,4 +84,5 @@ exclude = ["cvglue/thirdparty", "examples"]
 "**.py" = ["EXE002"]
 "cvglue/__init__.py" = ["F401", "F403"]
 "cvglue/utils/__init__.py" = ["F403"]
+"cvglue/utils/logger.py" = ["SIM115"]
 

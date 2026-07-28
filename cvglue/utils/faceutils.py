@@ -9,10 +9,10 @@ from .imageutils import apply_mask_merge, cal_bounding_rect, cvt_box_format, pad
 from .logger import setup_logger
 from .maskutils import generate_contours_mask
 
-try:
-    pass
-except Exception as e:
-    print(repr(e))
+# try:
+#     pass
+# except (ImportError, AttributeError) as e:
+#     llog.error(f"Failed to import or access module: {e}")
 
 llog = setup_logger(name=__name__)
 
@@ -76,7 +76,7 @@ def draw_headpose(
     if show_detail:
         cv2.putText(
             img,
-            "p:%f y:%f r:%f" % (pitch, yaw, roll),
+            f"p:{pitch:f} y:{yaw:f} r:{roll:f}",
             (10, 40),
             cv2.FONT_HERSHEY_COMPLEX,
             0.6,
@@ -125,7 +125,7 @@ def draw_headpose(
 
 def render_face(
     img_raw,
-    lands=[],
+    lands=None,
     face_box=None,
     headpose=None,
     radius=1,
@@ -138,12 +138,14 @@ def render_face(
 
     Args:
         img_raw(array):        opencv image
-        lands(array):          (x1, y1, x2, y2, ...) or np.array([[x1, y1], [x2, y2], ...])
+        lands(array):          (x1, y1, x2, y2, ...) or np.array([[x1, y1], [0, 0], ...])
         face_box(array):       (left, top, right, bottom)
 
     Outs:
         img(array)
     """
+    if lands is None:
+        lands = []
     img = img_raw
     if not inplace:
         img = np.zeros(img_raw.shape, dtype=img_raw.dtype)
@@ -165,7 +167,7 @@ def render_face(
         if lands_id:
             cv2.putText(
                 img,
-                "%d" % (i),
+                f"{i}",
                 (land[0] - 10, land[1] - 10),
                 cv2.FONT_HERSHEY_COMPLEX,
                 0.6,
@@ -456,7 +458,7 @@ def align_face(img, keypoints, output_size=None, rotate=True, **kwargs):
         or face_rb[0] < 0
         or face_rb[1] < 0
     ):
-        llog.warning("face box outside the image (%s, %s)." % (face_lt, face_rb))
+        llog.warning(f"face box outside the image ({face_lt}, {face_rb}).")
     face_size = face_rb - face_lt
 
     if rotate:
@@ -464,8 +466,7 @@ def align_face(img, keypoints, output_size=None, rotate=True, **kwargs):
         angle = 180 * rad / np.pi
         if angle > 85 and angle < 95:
             llog.warning(
-                "nearly 90 degree (%f) rotation may cause inversion of left right."
-                % angle
+                f"nearly 90 degree ({angle:f}) rotation may cause inversion of left right."
             )
     else:
         angle = 0
@@ -720,7 +721,7 @@ def crop_face_v3(img, keypoints, landmarks, rotate=True, output_size=None, **kwa
 
 
 def crop_face_v4(
-    img, face_box, keypoints=[], rotate=False, ratio=1.0, output_size=None
+    img, face_box, keypoints=None, rotate=False, ratio=1.0, output_size=None
 ):
     """Crop face ROI according to face box.
 

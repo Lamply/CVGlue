@@ -322,7 +322,7 @@ def fill_roi_image(src_image, roi_images, boxes):
     mask_img = np.zeros_like(src_image, dtype=np.float32)
     mask_cnt = np.zeros_like(src_image, dtype=np.float32)
     for rimg, box in zip(roi_images, boxes):
-        l, t, r, b = box  # noqa: E741
+        l, t, r, b = box
         mask_img[t:b, l:r] += rimg
         mask_cnt[t:b, l:r] += 1.0
     src_mask = np.float32(mask_cnt == 0)
@@ -493,7 +493,7 @@ def resize_scale(
                 interpolation=interp,
             )
         else:
-            print("resize_scale(): unkown align_flag %s" % align_flag)
+            print(f"resize_scale(): unkown align_flag {align_flag}")
             return
     elif scale != 1.0:
         resize_img = cv2.resize(
@@ -613,7 +613,7 @@ def resize_fix(
             elif position == "topleft":
                 fixed_img = resize_img[:dst_h, ...]
             else:
-                raise NotImplementedError('position "%s" not avaliable' % position)
+                raise NotImplementedError(f'position "{position}" not avaliable')
         elif flag == "pad":
             # align_flag = 0
             resize_img = resize_scale(
@@ -634,7 +634,7 @@ def resize_fix(
                     value=pad_value,
                 )
             else:
-                raise NotImplementedError('position "%s" not avaliable' % position)
+                raise NotImplementedError(f'position "{position}" not avaliable')
         else:
             print("fix_to_image_size(): error input flag.")
             return
@@ -650,7 +650,7 @@ def resize_fix(
             elif position == "topleft":
                 fixed_img = resize_img[:, :dst_w, ...]
             else:
-                raise NotImplementedError('position "%s" not avaliable' % position)
+                raise NotImplementedError(f'position "{position}" not avaliable')
         elif flag == "pad":
             # align_flag = 1
             resize_img = resize_scale(
@@ -671,7 +671,7 @@ def resize_fix(
                     value=pad_value,
                 )
             else:
-                raise NotImplementedError('position "%s" not avaliable' % position)
+                raise NotImplementedError(f'position "{position}" not avaliable')
         else:
             print("fix_to_image_size(): error input flag.")
             return

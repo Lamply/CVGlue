@@ -43,12 +43,13 @@ class sample_checker(base_checker):
             with open(name_list) as f:
                 self.uid_list = json.load(f)
         else:
-            raise RuntimeError("name_list should be a list or json list file path")
+            raise TypeError("name_list must be a list of strings or a JSON file path; got " + repr(type(name_list).__name__))
 
     def check_data(self, iap_data):
-        if iap_data[1]["name"] in self.uid_list:
+        image_name = iap_data[1]["name"]
+        if image_name in self.uid_list:
             if self.verbose:
-                print("remove %s" % iap_data[1]["name"])
+                print(f"removing sample {image_name}")
             return self.sample
         return not self.sample
 
@@ -77,7 +78,9 @@ class sample_once_checker(base_checker):
             with open(list_dict) as f:
                 self.list_dict = json.load(f)
         else:
-            raise RuntimeError("list_dict should be a dict or json list file path")
+            raise TypeError(
+                f"list_dict must be a dict or a JSON file path; got {type(list_dict)}"
+            )
         self.appeared = []
         self.exclude = exclude
         self.verbose = verbose

@@ -27,7 +27,7 @@ class mask_parser(base_parser):
             self.detector_bank += [self.semantic_mask_detector]
         else:
             raise NotImplementedError(
-                "mask mode: %s is not implemented" % self.mask_mode
+                f"mask mode: {self.mask_mode} is not implemented"
             )
 
     def semantic_mask_detector(self, bgr_img):
@@ -41,7 +41,7 @@ class mask_parser(base_parser):
                 os.path.abspath(self.output_mask_dir), base_name + ".png"
             )
             cv2.imwrite(mask_path, mask)
-        except Exception:
+        except cv2.error:
             print(traceback.print_exc())
             return {}
 

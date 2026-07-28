@@ -54,10 +54,7 @@ class blur_checker(base_checker):
             img_raw = cv2.cvtColor(img_raw, cv2.COLOR_BGR2GRAY)
             self.checked_img = cv2.resize(img_raw, (224, 224))
             self.score = cv2.Laplacian(self.checked_img, cv2.CV_64F).var()
-        if self.score < self.threshold:
-            return True
-        else:
-            return False
+        return self.score < self.threshold
 
     def check_image_pair(self, img_A, img_B):
         img_A = cv2.cvtColor(img_A, cv2.COLOR_BGR2GRAY)

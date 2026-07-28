@@ -46,7 +46,7 @@ class face_detector:
                 self.custom_detector.detect, origin_size=True
             )
         else:
-            raise RuntimeError("Error detector mode %s" % detect_mode)
+            raise RuntimeError(f"Error detector mode {detect_mode}")
 
     def __call__(self, img_raw):
         self.dets = self.detect(img_raw)

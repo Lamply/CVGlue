@@ -12,7 +12,7 @@ try:
     # pip install u-msgpack-python
     import umsgpack
     from deepdiff import DeepDiff
-except:  # noqa: E722
+except:  # noqa: E722 S110
     pass
 
 from .logger import setup_logger
@@ -72,7 +72,7 @@ def get_base_name(file_path):
 def get_ext_name(file_path):
     try:
         ext_name = os.path.splitext(file_path)[-1]
-    except Exception:
+    except OSError:
         ext_name = None
     return ext_name
 
@@ -125,7 +125,7 @@ def select_subdataset_idxs(dataset, subset_list, path2name=False):
 
 def make_grouped_dataset(dir):
     images = []
-    assert os.path.isdir(dir), "%s is not a valid directory" % dir
+    assert os.path.isdir(dir), f"{dir} is not a valid directory"
     sequences_dir = sorted(os.listdir(dir))
     for seq in sequences_dir:
         seq_dir = os.path.join(dir, seq)
@@ -244,10 +244,10 @@ def check_image_format(img, allow_float=False, fix_channels=True):
 
 def check_aligned_img_dataset(A_paths, B_paths):
     if len(A_paths) == 0:
-        raise Exception("Dataset A is empty, please check the `dataroot` option.")
+        raise RuntimeError("Dataset A is empty, please check the `dataroot` option.")
     if len(A_paths) != len(B_paths):
-        raise ValueError(
-            "Different size of A=%d and B=%d " % (len(A_paths), len(B_paths))
+        raise RuntimeError(
+            f"Different size of A={len(A_paths)} and B={len(B_paths)}"
         )
     for i in range(len(A_paths)):
         A_name = get_base_name(A_paths[i])
@@ -260,10 +260,10 @@ def check_aligned_img_dataset(A_paths, B_paths):
 
 def check_grouped_img_dataset(A_paths, B_paths):
     if len(A_paths) == 0:
-        raise Exception("Dataset is empty, please check the `dataroot` option.")
+        raise RuntimeError("Dataset is empty, please check the `dataroot` option.")
     if len(A_paths) != len(B_paths):
-        raise ValueError(
-            "Different size of A=%d and B=%d " % (len(A_paths), len(B_paths))
+        raise RuntimeError(
+            f"Different size of A={len(A_paths)} and B={len(B_paths)}"
         )
     for i in range(len(A_paths)):
         check_aligned_img_dataset(A_paths[i], B_paths[i])
@@ -328,8 +328,8 @@ def write_json_file(
 def check_dict_differences(
     src_dict: dict,
     ref_dict: dict,
-    exclude_diff: list[str] = None,
-    exclude_keys: list[str] = None,
+    exclude_diff: list[str] | None = None,
+    exclude_keys: list[str] | None = None,
 ) -> None:
     """
     Check the differences between two dictionaries.

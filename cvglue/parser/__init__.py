@@ -1,4 +1,4 @@
-from typing import Union
+from __future__ import annotations
 
 import numpy as np
 import PIL.ImageFile
@@ -14,7 +14,7 @@ from .face import (
     faceid_parser,
     faceid_stage,
     genderage_parser,
-    genderage_stage,
+    # genderage_stage,
     landmarks_parser,
     landmarks_stage,
     quality_parser,
@@ -45,11 +45,7 @@ def anno_exists(anno: dict, domain: str | list, **kwargs):
     if isinstance(domain, list):
         logit = [anno_exists(anno, spec) for spec in domain]
         return np.sum(logit) == len(domain)
-    if not anno.__contains__(domain):
-        return False
-    if isinstance(anno[domain], (dict, list)) and len(anno[domain]) == 0:
-        return False
-    return True
+    return domain in anno and not (isinstance(anno[domain], (dict, list)) and len(anno[domain]) == 0)
 
 
 def get_parser(version):

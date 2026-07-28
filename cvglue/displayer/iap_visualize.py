@@ -7,7 +7,7 @@ from ..utils import draw_headpose, render_face, render_mask
 __all__ = ["render_lamply"]
 
 
-def render_lamply(iap_data, disable_domain=[]):
+def render_lamply(iap_data, disable_domain=None):
     """Visualize iap_data with lamply annotations
 
     Args:
@@ -17,6 +17,8 @@ def render_lamply(iap_data, disable_domain=[]):
     Returns:
         img_disp (np.array):              image with annotaion visualized
     """
+    if disable_domain is None:
+        disable_domain = []
     img_disp = np.uint8(iap_data[0].copy())
     if anno_exists(iap_data[1], "faces"):
         for face in iap_data[1]["faces"]:
@@ -75,7 +77,7 @@ def render_lamply(iap_data, disable_domain=[]):
                 gender = "female" if face["gender"] == 0 else "male"
                 cv2.putText(
                     img_disp,
-                    "%s,%d" % (gender, face["age"]),
+                    f"{gender},{face['age']}",
                     (face_box[0] - 1, face_box[1] - 4),
                     cv2.FONT_HERSHEY_COMPLEX,
                     0.7,
@@ -86,11 +88,11 @@ def render_lamply(iap_data, disable_domain=[]):
                 img_disp = draw_headpose(
                     img_disp, *face["headpose"], face_box=face["face_box"]
                 )
-    if anno_exists(iap_data[1], "masks"):
-        if (
-            anno_exists(iap_data[1]["masks"], "portrait")
-            and "portrait" not in disable_domain
-        ):
-            mask = cv2.imread(iap_data[1]["masks"]["portrait"])
-            img_disp = render_mask(img_disp, mask, channel=2)
+    if (
+        anno_exists(iap_data[1], "masks")
+        and anno_exists(iap_data[1]["masks"], "portrait")
+        and "portrait" not in disable_domain
+    ):
+        mask = cv2.imread(iap_data[1]["masks"]["portrait"])
+        img_disp = render_mask(img_disp, mask, channel=2)
     return img_disp

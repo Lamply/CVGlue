@@ -48,8 +48,7 @@ class virtual_face_checker(base_checker):
             ]
         if len(self.template) == 0:
             raise RuntimeError(
-                "virtual_faces template is None, check dir: %s"
-                % os.path.join(InsightFace_dir, "virtual_faces")
+                "virtual_faces template is None, check dir: " + os.path.join(InsightFace_dir, "virtual_faces")
             )
 
     def check_image(self, raw_img, keypoints=None):
@@ -85,14 +84,7 @@ class virtual_face_checker(base_checker):
         similarity = np.sqrt(np.mean(similarity * similarity))
         if self.verbose:
             print("final", similarity)
-        if (
-            similarity < self.max_threshold
-            or median_sim < self.max_threshold
-            or one_of_close
-        ):
-            return True
-        else:
-            return False
+        return similarity < self.max_threshold or median_sim < self.max_threshold or one_of_close
 
     def check_data(self, iap_data):
         for face in iap_data[1]["faces"]:

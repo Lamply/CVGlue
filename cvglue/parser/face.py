@@ -31,8 +31,7 @@ class face_stage:
             self.set_insightface_detector()
         else:
             raise NotImplementedError(
-                "method %s is not implemented, choose one of [lamply, insightface]"
-                % method
+                f"method {method} is not implemented, choose one of [lamply, insightface]"
             )
 
     def set_lamply_detector(self, mode, **kwargs):
@@ -59,7 +58,7 @@ class face_stage:
         try:
             dets = self.fd(img)
             face_cnt = dets.shape[0] if len(dets) > 0 else 0
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             llog.warning(f"face_bbox_keypoints_detector failed with: {e}")
             return {}
 
@@ -92,7 +91,7 @@ class face_stage:
     def face_analysis_detector(self, img, context_dict):
         try:
             face_list = self.app.get(img)
-        except Exception as e:
+        except (RuntimeError, ValueError) as e:
             llog.warning(repr(e))
             return {}
         return {"faces": face_list}
@@ -108,8 +107,9 @@ class landmarks_stage:
             self.set_adaptivewing_detector()
         else:
             raise NotImplementedError(
-                "method %s is not implemented, choose one of [adaptivewing]" % method
+                f"method {method} is not implemented, choose one of [tface]"
             )
+
 
     def set_adaptivewing_detector(self):
         from ..detector import landmark_detector
@@ -129,7 +129,7 @@ class landmarks_stage:
                 face_box = face["face_box"]
                 lands = self.ld(img, face_box)
                 face["landmarks"] = lands.tolist()
-        except Exception as e:
+        except (RuntimeError, ValueError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} landmarks stage failed: {e}")
         return {}
 
@@ -144,7 +144,7 @@ class attribute_stage:
             self.set_headpose_detector()
         else:
             raise NotImplementedError(
-                "method %s is not implemented, choose one of [headpose]" % method
+                f"method {method} is not implemented, choose one of [headpose]"
             )
 
     def set_headpose_detector(self):
@@ -164,7 +164,7 @@ class attribute_stage:
             for face in update_dict:
                 headpose_pyr = self.ad(img, face["face_box"])
                 face["headpose"] = headpose_pyr
-        except Exception as e:
+        except (RuntimeError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} attribute stage failed: {e}")
         return {}
 
@@ -179,7 +179,7 @@ class genderage_stage:
             self.set_genderage_detector()
         else:
             raise NotImplementedError(
-                "method %s is not implemented, choose one of [headpose]" % method
+                f"method {method} is not implemented, choose one of [headpose]"
             )
 
     def set_genderage_detector(self):
@@ -206,7 +206,7 @@ class genderage_stage:
                 gender, age = self.app.models["genderage"].get(img, self.face_dict)
                 face["gender"] = int(gender)
                 face["age"] = int(age)
-        except Exception as e:
+        except (RuntimeError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} genderage stage failed: {e}")
         return {}
 
@@ -221,7 +221,7 @@ class faceid_stage:
             self.set_faceid_detector()
         else:
             raise NotImplementedError(
-                "method %s is not implemented, choose one of [headpose]" % method
+                f"method {method} is not implemented, choose one of [headpose]"
             )
 
     def set_faceid_detector(self):
@@ -242,7 +242,7 @@ class faceid_stage:
                 face["faceid"] = (
                     self.faid_detector(img, face["key_points"]).flatten().tolist()
                 )
-        except Exception as e:
+        except (RuntimeError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} faceid stage failed: {e}")
         return {}
 
@@ -257,7 +257,7 @@ class blur_stage:
             self.set_blur_detector()
         else:
             raise NotImplementedError(
-                "method %s is not implemented, choose one of [insightface]" % method
+                f"method {method} is not implemented, choose one of [insightface]"
             )
 
     def set_blur_detector(self):
@@ -276,7 +276,7 @@ class blur_stage:
             for face in update_dict:
                 self.blur_detector.check_image(img, face)
                 face["blurriness"] = self.blur_detector.score
-        except Exception as e:
+        except (RuntimeError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} blur stage failed: {e}")
         return {}
 
@@ -291,7 +291,7 @@ class quality_stage:
             self.set_face_quality_detector()
         else:
             raise NotImplementedError(
-                "method %s is not implemented, choose one of [headpose]" % method
+                f"method {method} is not implemented, choose one of [headpose]"
             )
 
     def set_face_quality_detector(self):
@@ -310,7 +310,7 @@ class quality_stage:
             update_dict = context_dict.get("faces", [])
             for face in update_dict:
                 face["quality"] = self.qd(img, face["key_points"]).item()
-        except Exception as e:
+        except (RuntimeError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} quality stage failed: {e}")
         return {}
 

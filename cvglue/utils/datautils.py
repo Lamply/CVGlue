@@ -108,7 +108,7 @@ def get_random_data(dataset, func=None, out_size=None, out_format="BGR"):
         try:
             data_name = dataset[randnum]
             test_img = cv2.imread(data_name)
-        except Exception:
+        except (cv2.error, OSError):
             data_name = ""
             test_img = dataset[randnum]
 

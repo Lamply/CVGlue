@@ -36,7 +36,7 @@ class jpeg_restore_processor:
                     restored_tensor, cvtcolor=True, valmin=0.0, valmax=1.0
                 )
                 return (restored_img, iap_data[1])
-            except Exception as e:
+            except (RuntimeError, ValueError) as e:
                 llog.warning(repr(e))
             return None
 

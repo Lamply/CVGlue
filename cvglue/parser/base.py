@@ -27,11 +27,10 @@ class base_parser:
             self.out_json = read_json_file(out_json_file)
         elif not os.path.exists(self.output_dir):
             os.makedirs(self.output_dir, exist_ok=True)
-            print("WARNING: output dir (%s) not exists, auto created" % self.output_dir)
+            print(f"WARNING: output dir ({self.output_dir}) not exists, auto created")
         elif os.path.exists(out_json_file):
             raise RuntimeError(
-                "Unexpected %s is already exists, and not work in current mode."
-                % out_json_file
+                f"Unexpected {out_json_file} is already exists, and not work in current mode."
             )
         self.out_json_file = out_json_file
 
@@ -41,7 +40,7 @@ class base_parser:
     def parse_img(self, img, name="input_img"):
         try:
             img = check_image_format(img)
-        except Exception as e:
+        except (cv2.error, ValueError) as e:
             print(name, repr(e))
             return
         self.current_obj_dict = set_image_anno(
@@ -75,7 +74,7 @@ class base_parser:
             img = cv2.imread(img_path)
             try:
                 img = check_image_format(img)
-            except Exception as e:
+            except (cv2.error, ValueError) as e:
                 print(img_path, repr(e))
                 return
             self.current_obj_dict = (
@@ -95,7 +94,7 @@ class base_parser:
             self.out_json.update({base_name: self.current_obj_dict})
         elif not self.continue_flag:
             raise RuntimeError(
-                "ERROR: label of %s already exists in json file, conflict" % file_name
+                f"ERROR: label of {file_name} already exists in json file, conflict"
             )
 
     def parse(

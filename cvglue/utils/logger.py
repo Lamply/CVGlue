@@ -97,7 +97,7 @@ def setup_logger(
 
     # file logging
     if output is not None:
-        if output.endswith(".txt") or output.endswith(".log"):
+        if output.endswith((".txt", ".log")):
             filename = output
         else:
             filename = os.path.join(output, "log.txt")

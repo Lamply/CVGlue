@@ -21,13 +21,9 @@ class similarity_checker(base_checker):
         tensor_A = to_tensor(img_A).cuda()
         with torch.no_grad():
             self.score = self.loss_fn.forward(tensor_A, tensor_B)
-        if self.score < self.threshold:
-            return True
-        return False
+        return self.score < self.threshold
 
     def check_tensor_pair(self, tensor_A, tensor_B):
         with torch.no_grad():
             self.score = self.loss_fn.forward(tensor_A, tensor_B)
-        if self.score < self.threshold:
-            return True
-        return False
+        return self.score < self.threshold
