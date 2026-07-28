@@ -1,22 +1,14 @@
 import os
 
 from ..utils import setup_logger
-from .base import base_parser
 
 __all__ = [
-    "attribute_parser",
     "attribute_stage",
-    "blur_parser",
     "blur_stage",
-    "face_parser",
     "face_stage",
-    "faceid_parser",
     "faceid_stage",
-    "genderage_parser",
     "genderage_stage",
-    "landmarks_parser",
     "landmarks_stage",
-    "quality_parser",
     "quality_stage",
 ]
 
@@ -97,10 +89,6 @@ class face_stage:
         return {"faces": face_list}
 
 
-def face_parser(method="lamply", mode="selfie", **kwargs):
-    return base_parser(stages=[face_stage(method=method, mode=mode, **kwargs)])
-
-
 class landmarks_stage:
     def __init__(self, method="adaptivewing"):
         if method == "adaptivewing":
@@ -134,10 +122,6 @@ class landmarks_stage:
         return {}
 
 
-def landmarks_parser(method="adaptivewing"):
-    return base_parser(stages=[landmarks_stage(method=method)])
-
-
 class attribute_stage:
     def __init__(self, method="headpose"):
         if method == "headpose":
@@ -167,10 +151,6 @@ class attribute_stage:
         except (RuntimeError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} attribute stage failed: {e}")
         return {}
-
-
-def attribute_parser(method="headpose"):
-    return base_parser(stages=[attribute_stage(method=method)])
 
 
 class genderage_stage:
@@ -211,10 +191,6 @@ class genderage_stage:
         return {}
 
 
-def genderage_parser(method="insightface"):
-    return base_parser(stages=[genderage_stage(method=method)])
-
-
 class faceid_stage:
     def __init__(self, method="insightface"):
         if method == "insightface":
@@ -247,10 +223,6 @@ class faceid_stage:
         return {}
 
 
-def faceid_parser(method="insightface"):
-    return base_parser(stages=[faceid_stage(method=method)])
-
-
 class blur_stage:
     def __init__(self, method="opencv"):
         if method == "opencv":
@@ -279,10 +251,6 @@ class blur_stage:
         except (RuntimeError, KeyError) as e:
             llog.warning(f"WARNING: {base_name} blur stage failed: {e}")
         return {}
-
-
-def blur_parser(method="opencv"):
-    return base_parser(stages=[blur_stage(method=method)])
 
 
 class quality_stage:
@@ -314,6 +282,3 @@ class quality_stage:
             llog.warning(f"WARNING: {base_name} quality stage failed: {e}")
         return {}
 
-
-def quality_parser(method="tface"):
-    return base_parser(stages=[quality_stage(method=method)])
