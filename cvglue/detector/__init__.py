@@ -1,1 +1,15 @@
-from .face import face_detector, landmark_detector, attribute_detector, faceid_detector, quality_detector
+from .face import (
+    attribute_detector,
+    face_detector,
+    faceid_detector,
+    landmark_detector,
+    quality_detector,
+)
+
+__all__ = [
+    "attribute_detector",
+    "face_detector",
+    "faceid_detector",
+    "landmark_detector",
+    "quality_detector",
+]

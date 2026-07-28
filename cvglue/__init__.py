@@ -1,9 +1,7 @@
+from .checker import checker
+from .detector import detector
+from .displayer import displayer as display
+from .parser import parser
+from .processor import processor
+from .thirdparty import thirdparty
 from .utils import *
-from . import processor
-from . import parser
-from . import displayer as display
-from . import detector
-from . import checker
-from . import thirdparty
-
-__version__ = '1.3.0'

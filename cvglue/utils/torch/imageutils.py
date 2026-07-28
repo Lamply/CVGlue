@@ -1,37 +1,46 @@
 import os
+
 import cv2
 import numpy as np
 import torch
 import torch.nn.functional as F
 
-__all__ = ["affine2theta", "cal_residual_diff_tensor", "color_calibration_tensor", 
-           "crop_tensor", "ordinary_ridge_regression", "resize_fix_tensor", 
-           "resize_scale_tensor", "warpAffine"]
+__all__ = [
+    "affine2theta",
+    "cal_residual_diff_tensor",
+    "color_calibration_tensor",
+    "crop_tensor",
+    "ordinary_ridge_regression",
+    "resize_fix_tensor",
+    "resize_scale_tensor",
+    "warpAffine",
+]
 
 
-def cal_residual_diff_tensor(tensor_a, tensor_b, method='', fg_mask=None):
-    '''Calculate residual standard deviation value of two tensor.
+def cal_residual_diff_tensor(tensor_a, tensor_b, method="", fg_mask=None):
+    """Calculate residual standard deviation value of two tensor.
 
     Args:
-        method(array):        'color': calculate standard diviation map 
-                                         if img_a and img_b is mainly 
+        method(array):        'color': calculate standard diviation map
+                                         if img_a and img_b is mainly
                                          different in color channel
 
     Outs:
         diff_v(float)
-    '''
+    """
     res = tensor_a - tensor_b
     if fg_mask is not None:
         res = res * fg_mask
-    diff_map = torch.std(res, dim=1) if 'color' in method else res
+    diff_map = torch.std(res, dim=1) if "color" in method else res
     if fg_mask is not None:
         diff_v = torch.sum(diff_map) / torch.sum(fg_mask)
     else:
         diff_v = torch.mean(diff_map)
     return diff_v
 
+
 def color_calibration_tensor(roi_img, roi_ref):
-    '''Get color calibration matrix from roi_img to roi_ref.
+    """Get color calibration matrix from roi_img to roi_ref.
 
     Args:
         roi_img(tensor):            pytorch tensor in [3, n] or [3*n]
@@ -42,16 +51,24 @@ def color_calibration_tensor(roi_img, roi_ref):
 
     Usage:
         clib_img = np.uint8(np.clip(np.matmul(np.insert(img.reshape(-1,3), [3], 1, axis=-1), trans_mat).reshape(img.shape), 0, 255))
-    '''
+    """
     roi_mat = roi_img.reshape((3, -1))
-    poi_img_mat = torch.cat([roi_mat, torch.ones(1, roi_mat.shape[1], device=roi_mat.device)], axis=0).transpose(1,0)
-    poi_ref_mat = roi_ref.reshape(3, -1).transpose(1,0)
-    trans_mat_t = torch.matmul(torch.matmul(torch.linalg.pinv(torch.matmul(poi_img_mat.transpose(1,0), poi_img_mat)), poi_img_mat.transpose(1,0)), poi_ref_mat)
+    poi_img_mat = torch.cat(
+        [roi_mat, torch.ones(1, roi_mat.shape[1], device=roi_mat.device)], axis=0
+    ).transpose(1, 0)
+    poi_ref_mat = roi_ref.reshape(3, -1).transpose(1, 0)
+    trans_mat_t = torch.matmul(
+        torch.matmul(
+            torch.linalg.pinv(torch.matmul(poi_img_mat.transpose(1, 0), poi_img_mat)),
+            poi_img_mat.transpose(1, 0),
+        ),
+        poi_ref_mat,
+    )
     return trans_mat_t
 
 
 def ordinary_ridge_regression(X, y, penalty):
-    '''
+    """
 
     Args:
         X(tensor):        pytorch tensor in [1, M]
@@ -59,10 +76,10 @@ def ordinary_ridge_regression(X, y, penalty):
 
     Outs:
         A(tensor):        matrix transfer from X to y
-    '''
+    """
     X = torch.cat([X, torch.ones((1, X.shape[1]), device=X.device)], axis=0)
     lam = penalty * torch.eye(X.shape[0])
-    lam[1,1] = 0.0
+    lam[1, 1] = 0.0
     A = torch.linalg.pinv(X.T @ X + lam) @ X.T @ y
     return A
 
@@ -92,14 +109,27 @@ def affine2theta(warp_mat, in_size, out_size):
     H1 = in_size[2]
     W2 = out_size[3]
     H2 = out_size[2]
-    warp_wh_2 = np.array([2/W2, 0, -1, 0, 2/H2, -1, 0, 0, 1]).reshape(1,3,3).repeat(bs, axis=0)
-    warp_wh_1 = np.array([W1/2, 0, W1/2, 0, H1/2, H1/2, 0, 0, 1]).reshape(1,3,3).repeat(bs, axis=0)
-    warp_mat_r = np.insert(warp_mat, [2], [0,0,1], axis=1)
-    aff_theta = torch.from_numpy(np.linalg.pinv(warp_wh_2 @ warp_mat_r @ warp_wh_1))[:,:2].type(torch.float32)
+    warp_wh_2 = (
+        np.array([2 / W2, 0, -1, 0, 2 / H2, -1, 0, 0, 1])
+        .reshape(1, 3, 3)
+        .repeat(bs, axis=0)
+    )
+    warp_wh_1 = (
+        np.array([W1 / 2, 0, W1 / 2, 0, H1 / 2, H1 / 2, 0, 0, 1])
+        .reshape(1, 3, 3)
+        .repeat(bs, axis=0)
+    )
+    warp_mat_r = np.insert(warp_mat, [2], [0, 0, 1], axis=1)
+    aff_theta = torch.from_numpy(np.linalg.pinv(warp_wh_2 @ warp_mat_r @ warp_wh_1))[
+        :, :2
+    ].type(torch.float32)
     return aff_theta
 
-def warpAffine(src, M, out_size, interp_mode='bilinear', align_corners=True, padding_mode="zeros"):
-    '''Applies an affine transformation to an image.
+
+def warpAffine(
+    src, M, out_size, interp_mode="bilinear", align_corners=True, padding_mode="zeros"
+):
+    """Applies an affine transformation to an image.
 
     Notice:
         - Unlike OpenCV, resolution and H/W ratio is affected by out_size
@@ -112,8 +142,8 @@ def warpAffine(src, M, out_size, interp_mode='bilinear', align_corners=True, pad
 
     Outs:
         dst(Tensor)
-    '''
-    M = M if len(M.shape) == 3 else M[np.newaxis,:].repeat(src.shape[0], axis=0)
+    """
+    M = M if len(M.shape) == 3 else M[np.newaxis, :].repeat(src.shape[0], axis=0)
     W1 = src.size()[3]
     H1 = src.size()[2]
     W2 = out_size[3]
@@ -122,22 +152,33 @@ def warpAffine(src, M, out_size, interp_mode='bilinear', align_corners=True, pad
     if W1 > W2 and H1 > H2:
         out_size = src.size()
     # deterministic algorithms supported
-    if os.environ.get('DETERMINISTIC_TEST') == "True":
+    if os.environ.get("DETERMINISTIC_TEST") == "True":
         imgs = src.detach().cpu().numpy()
-        imgs_t = imgs.transpose(0,2,3,1)
+        imgs_t = imgs.transpose(0, 2, 3, 1)
         dst_img = []
         for i in range(M.shape[0]):
-            tmp_img = cv2.warpAffine(imgs_t[i], M[i], (out_size[3], out_size[2]))[np.newaxis,...]
-            dst_img.append(tmp_img.transpose(0,3,1,2))
+            tmp_img = cv2.warpAffine(imgs_t[i], M[i], (out_size[3], out_size[2]))[
+                np.newaxis, ...
+            ]
+            dst_img.append(tmp_img.transpose(0, 3, 1, 2))
         dst = torch.from_numpy(np.concatenate(dst_img, axis=0)).cuda()
     else:
         # aff_theta (Nx2x3)
         aff_theta = affine2theta(M, src.size(), out_size)
         # grid (NxHxWx2)
-        grid = torch.nn.functional.affine_grid(aff_theta.cuda(), out_size, align_corners=align_corners)
-        dst = torch.nn.functional.grid_sample(src.cuda(), grid, mode=interp_mode, align_corners=align_corners, padding_mode=padding_mode)
-        dst = dst[:,:,:H2,:W2]
+        grid = torch.nn.functional.affine_grid(
+            aff_theta.cuda(), out_size, align_corners=align_corners
+        )
+        dst = torch.nn.functional.grid_sample(
+            src.cuda(),
+            grid,
+            mode=interp_mode,
+            align_corners=align_corners,
+            padding_mode=padding_mode,
+        )
+        dst = dst[:, :, :H2, :W2]
     return dst
+
 
 ## simplify version (Not tested)
 # def affine2theta(param, w, h):
@@ -152,7 +193,15 @@ def warpAffine(src, M, out_size, interp_mode='bilinear', align_corners=True, pad
 #     theta = torch.from_numpy(theta).unsqueeze(0).type(torch.float32)
 #     return theta
 
-def resize_scale_tensor(src_img, scale=1.0, align_length=0, align_flag='height', interp='bilinear', align_grid=0):
+
+def resize_scale_tensor(
+    src_img,
+    scale=1.0,
+    align_length=0,
+    align_flag="height",
+    interp="bilinear",
+    align_grid=0,
+):
     """Scale resize input image.
 
     Args:
@@ -166,22 +215,31 @@ def resize_scale_tensor(src_img, scale=1.0, align_length=0, align_flag='height',
     Outs:
         Resized image
     """
+
     def apply_align_grid(length, grid):
         return grid * (length // grid)
 
     if scale == 1.0 and align_length == 0:
         return src_img
     elif align_length > 0:
-        if align_flag == 'height':
+        if align_flag == "height":
             align_w = int(src_img.shape[3] * align_length / src_img.shape[2])
-            align_w = apply_align_grid(align_w, align_grid) if align_grid > 0 else align_w
-            resize_img = F.interpolate(src_img, size=(align_length, align_w), mode=interp)
-        elif align_flag == 'width':
+            align_w = (
+                apply_align_grid(align_w, align_grid) if align_grid > 0 else align_w
+            )
+            resize_img = F.interpolate(
+                src_img, size=(align_length, align_w), mode=interp
+            )
+        elif align_flag == "width":
             align_h = int(src_img.shape[2] * align_length / src_img.shape[3])
-            align_h = apply_align_grid(align_h, align_grid) if align_grid > 0 else align_h
-            resize_img = F.interpolate(src_img, size=(align_h, align_length), mode=interp)
+            align_h = (
+                apply_align_grid(align_h, align_grid) if align_grid > 0 else align_h
+            )
+            resize_img = F.interpolate(
+                src_img, size=(align_h, align_length), mode=interp
+            )
         else:
-            print('resize_scale(): unkown align_flag %s' % align_flag)
+            print(f"resize_scale(): unkown align_flag {align_flag}")
             return
     elif scale != 1.0:
         align_w = int(src_img.shape[3] * scale)
@@ -190,12 +248,12 @@ def resize_scale_tensor(src_img, scale=1.0, align_length=0, align_flag='height',
         align_h = apply_align_grid(align_h, align_grid) if align_grid > 0 else align_h
         resize_img = F.interpolate(src_img, size=(align_h, align_w), mode=interp)
     else:
-        print('resize_scale(): error input align_length or scale')
+        print("resize_scale(): error input align_length or scale")
         return src_img
     return resize_img
 
 
-def resize_fix_tensor(src_img, dst_h, dst_w, flag='pad'):
+def resize_fix_tensor(src_img, dst_h, dst_w, flag="pad"):
     """Fix source image size to a fixed size.
 
     Args:
@@ -205,41 +263,55 @@ def resize_fix_tensor(src_img, dst_h, dst_w, flag='pad'):
         flag:           Resize flag: 'pad' or 'crop', default 'pad'
                                     pad: Resize according image's long size and pad 0 to fix short size
                                     crop: Resize according image's short size and crop center to fix long size
-    
+
     Outs:
         fixed-size image
         fix-scale shape
     """
     src_h = src_img.shape[2]
     src_w = src_img.shape[3]
-    src_ratio = np.float32(src_h)/np.float32(src_w)
-    dst_ratio = np.float32(dst_h)/np.float32(dst_w)
+    src_ratio = np.float32(src_h) / np.float32(src_w)
+    dst_ratio = np.float32(dst_h) / np.float32(dst_w)
 
     if src_ratio > dst_ratio:
-        if flag == 'crop':
-            align_flag = 1
-            resize_img = resize_scale_tensor(src_img, align_length=dst_w, align_flag='width')
+        if flag == "crop":
+            # align_flag = 1
+            resize_img = resize_scale_tensor(
+                src_img, align_length=dst_w, align_flag="width"
+            )
             crop_start = int((resize_img.shape[2] - dst_h) / 2)
-            fixed_img = resize_img[:, :, crop_start:crop_start + dst_h, :]
-        elif flag == 'pad':
-            align_flag = 0
-            resize_img = resize_scale_tensor(src_img, align_length=dst_h, align_flag='height')
-            fixed_img = torch.zeros((src_img.shape[0],src_img.shape[1],dst_h,dst_w), device=src_img.device)
-            fixed_img[:,:,:resize_img.shape[2], :resize_img.shape[3]] = resize_img
+            fixed_img = resize_img[:, :, crop_start : crop_start + dst_h, :]
+        elif flag == "pad":
+            # align_flag = 0
+            resize_img = resize_scale_tensor(
+                src_img, align_length=dst_h, align_flag="height"
+            )
+            fixed_img = torch.zeros(
+                (src_img.shape[0], src_img.shape[1], dst_h, dst_w),
+                device=src_img.device,
+            )
+            fixed_img[:, :, : resize_img.shape[2], : resize_img.shape[3]] = resize_img
         else:
             print("fix_to_image_size(): error input flag.")
             return
     else:
-        if flag == 'crop':
-            align_flag = 0
-            resize_img = resize_scale_tensor(src_img, align_length=dst_h, align_flag='height')
+        if flag == "crop":
+            # align_flag = 0
+            resize_img = resize_scale_tensor(
+                src_img, align_length=dst_h, align_flag="height"
+            )
             crop_start = int((resize_img.shape[3] - dst_w) / 2)
-            fixed_img = resize_img[:, :, :, crop_start:crop_start + dst_w]
-        elif flag == 'pad':
-            align_flag = 1
-            resize_img = resize_scale_tensor(src_img, align_length=dst_w, align_flag='width')
-            fixed_img = torch.zeros((src_img.shape[0],src_img.shape[1],dst_h,dst_w), device=src_img.device)
-            fixed_img[:,:,:resize_img.shape[2], :resize_img.shape[3]] = resize_img
+            fixed_img = resize_img[:, :, :, crop_start : crop_start + dst_w]
+        elif flag == "pad":
+            # align_flag = 1
+            resize_img = resize_scale_tensor(
+                src_img, align_length=dst_w, align_flag="width"
+            )
+            fixed_img = torch.zeros(
+                (src_img.shape[0], src_img.shape[1], dst_h, dst_w),
+                device=src_img.device,
+            )
+            fixed_img[:, :, : resize_img.shape[2], : resize_img.shape[3]] = resize_img
         else:
             print("fix_to_image_size(): error input flag.")
             return
@@ -247,8 +319,8 @@ def resize_fix_tensor(src_img, dst_h, dst_w, flag='pad'):
     return fixed_img
 
 
-def crop_tensor(img, shape, position='ssss'):
-    '''Crop a sub-tensor according position.
+def crop_tensor(img, shape, position="ssss"):
+    """Crop a sub-tensor according position.
 
     Args:
         img(tensor):            pytorch tensor
@@ -256,11 +328,11 @@ def crop_tensor(img, shape, position='ssss'):
         position:               code of targe sub-tensor position: s(start), c(center), e(end)
 
     Outs:
-    '''
-    assert(len(shape) == 4)
-    if position == 'ssss':
-        return img[:shape[0], :shape[1], :shape[2], :shape[3]]
-    elif position == 'eeee':
-        return img[-shape[0]:, -shape[1]:, -shape[2]:, -shape[3]:]
+    """
+    assert len(shape) == 4
+    if position == "ssss":
+        return img[: shape[0], : shape[1], : shape[2], : shape[3]]
+    elif position == "eeee":
+        return img[-shape[0] :, -shape[1] :, -shape[2] :, -shape[3] :]
     else:
-        raise NotImplementedError('%s not implemented' % position)
+        raise NotImplementedError(f"{position} not implemented")

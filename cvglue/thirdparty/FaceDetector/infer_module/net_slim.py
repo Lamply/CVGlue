@@ -1,37 +1,37 @@
 import torch
 import torch.nn as nn
-import torchvision.models.detection.backbone_utils as backbone_utils
-import torchvision.models._utils as _utils
 import torch.nn.functional as F
-from collections import OrderedDict
 
-def conv_bn(inp, oup, stride = 1):
+
+def conv_bn(inp, oup, stride=1):
     return nn.Sequential(
         nn.Conv2d(inp, oup, 3, stride, 1, bias=False),
         nn.BatchNorm2d(oup),
-        nn.ReLU(inplace=True)
+        nn.ReLU(inplace=True),
     )
+
 
 def depth_conv2d(inp, oup, kernel=1, stride=1, pad=0):
     return nn.Sequential(
-        nn.Conv2d(inp, inp, kernel_size = kernel, stride = stride, padding=pad, groups=inp),
+        nn.Conv2d(inp, inp, kernel_size=kernel, stride=stride, padding=pad, groups=inp),
         nn.ReLU(inplace=True),
-        nn.Conv2d(inp, oup, kernel_size=1)
+        nn.Conv2d(inp, oup, kernel_size=1),
     )
+
 
 def conv_dw(inp, oup, stride):
     return nn.Sequential(
         nn.Conv2d(inp, inp, 3, stride, 1, groups=inp, bias=False),
         nn.BatchNorm2d(inp),
         nn.ReLU(inplace=True),
-
         nn.Conv2d(inp, oup, 1, 1, 0, bias=False),
         nn.BatchNorm2d(oup),
-        nn.ReLU(inplace=True)
+        nn.ReLU(inplace=True),
     )
 
+
 class Slim(nn.Module):
-    def __init__(self, cfg = None, phase = 'train'):
+    def __init__(self, cfg=None, phase="train"):
         """
         :param cfg:  Network related settings.
         :param phase: train or test.
@@ -60,9 +60,9 @@ class Slim(nn.Module):
             nn.Conv2d(in_channels=256, out_channels=64, kernel_size=1),
             nn.ReLU(inplace=True),
             depth_conv2d(64, 256, kernel=3, stride=2, pad=1),
-            nn.ReLU(inplace=True)
+            nn.ReLU(inplace=True),
         )
-        self.loc, self.conf, self.landm = self.multibox(self.num_classes);
+        self.loc, self.conf, self.landm = self.multibox(self.num_classes)
 
     def multibox(self, num_classes):
         loc_layers = []
@@ -83,10 +83,13 @@ class Slim(nn.Module):
         loc_layers += [nn.Conv2d(256, 3 * 4, kernel_size=3, padding=1)]
         conf_layers += [nn.Conv2d(256, 3 * num_classes, kernel_size=3, padding=1)]
         landm_layers += [nn.Conv2d(256, 3 * 10, kernel_size=3, padding=1)]
-        return nn.Sequential(*loc_layers), nn.Sequential(*conf_layers), nn.Sequential(*landm_layers)
+        return (
+            nn.Sequential(*loc_layers),
+            nn.Sequential(*conf_layers),
+            nn.Sequential(*landm_layers),
+        )
 
-
-    def forward(self,inputs):
+    def forward(self, inputs):
         detections = list()
         loc = list()
         conf = list()
@@ -111,10 +114,10 @@ class Slim(nn.Module):
         x13 = self.conv13(x12)
         detections.append(x13)
 
-        x14= self.conv14(x13)
+        x14 = self.conv14(x13)
         detections.append(x14)
 
-        for (x, l, c, lam) in zip(detections, self.loc, self.conf, self.landm):
+        for x, l, c, lam in zip(detections, self.loc, self.conf, self.landm):
             loc.append(l(x).permute(0, 2, 3, 1).contiguous())
             conf.append(c(x).permute(0, 2, 3, 1).contiguous())
             landm.append(lam(x).permute(0, 2, 3, 1).contiguous())
@@ -123,10 +126,12 @@ class Slim(nn.Module):
         classifications = torch.cat([o.view(o.size(0), -1, 2) for o in conf], 1)
         ldm_regressions = torch.cat([o.view(o.size(0), -1, 10) for o in landm], 1)
 
-
-
-        if self.phase == 'train':
+        if self.phase == "train":
             output = (bbox_regressions, classifications, ldm_regressions)
         else:
-            output = (bbox_regressions, F.softmax(classifications, dim=-1), ldm_regressions)
+            output = (
+                bbox_regressions,
+                F.softmax(classifications, dim=-1),
+                ldm_regressions,
+            )
         return output

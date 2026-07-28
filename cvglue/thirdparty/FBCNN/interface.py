@@ -1,5 +1,4 @@
 import os
-import itertools
 import torch
 from .model import FBCNN
 from .comfy_ui_utils import OOM_EXCEPTION, tiled_scale
@@ -108,7 +107,7 @@ class FBCNNProcessor:
                     tile_y=tile,
                     overlap=overlap,
                     upscale_amount=1,
-                    out_channels=self.n_channels
+                    out_channels=self.n_channels,
                 )
                 oom = False
             except OOM_EXCEPTION as e:

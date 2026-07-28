@@ -1,3 +1,3 @@
 from .interface import HeadPoseDetector
 
-__all__ = ['HeadPoseDetector']
+__all__ = ["HeadPoseDetector"]

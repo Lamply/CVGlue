@@ -12,23 +12,31 @@ class image_properties_checker(base_checker):
         self.verbose = verbose
 
     def check_image(self, img_raw):
-        if self.min_size:
-            if img_raw.shape[0] < self.min_size[0] or img_raw.shape[1] < self.min_size[1]:
-                return False
-        if self.max_size:
-            if img_raw.shape[0] > self.max_size[0] or img_raw.shape[1] > self.max_size[1]:
-                return False
+        if self.min_size and (
+            img_raw.shape[0] < self.min_size[0]
+            or img_raw.shape[1] < self.min_size[1]
+        ):
+            return False
+        if self.max_size and (
+            img_raw.shape[0] > self.max_size[0]
+            or img_raw.shape[1] > self.max_size[1]
+        ):
+            return False
         if self.hw_ratio != 0.0:
             return img_raw.shape[0] / img_raw.shape[1] >= self.hw_ratio
         return True
 
     def check_data(self, iap_data):
-        if self.min_size:
-            if iap_data[1]['height'] < self.min_size[0] or iap_data[1]['width'] < self.min_size[1]:
-                return False
-        if self.max_size:
-            if iap_data[1]['height'] > self.max_size[0] or iap_data[1]['width'] > self.max_size[1]:
-                return False
+        if self.min_size and (
+            iap_data[1]["height"] < self.min_size[0]
+            or iap_data[1]["width"] < self.min_size[1]
+        ):
+            return False
+        if self.max_size and (
+            iap_data[1]["height"] > self.max_size[0]
+            or iap_data[1]["width"] > self.max_size[1]
+        ):
+            return False
         if self.hw_ratio != 0.0:
-            return iap_data[1]['height'] / iap_data[1]['width'] >= self.hw_ratio
+            return iap_data[1]["height"] / iap_data[1]["width"] >= self.hw_ratio
         return True

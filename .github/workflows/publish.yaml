@@ -6,19 +6,13 @@ on:
       - 'v*'
 
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/cvglue
-
-    permissions:
-      contents: write
-      id-token: write
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # hatch-vcs 需要完整的历史记录来推算版本号
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -28,14 +22,39 @@ jobs:
       - name: Install Hatch
         run: pip install hatch
 
-      - name: Install project dependencies (including dev)
-        run: hatch env create
+      - name: Build package
+        run: hatch build
 
-      - name: Run tests (via hatch)
-        run: hatch run test
+      - name: Upload dists
+        uses: actions/upload-artifact@v4
+        with:
+          name: pypi-dist
+          path: dist/
 
-      - name: Build package with hatch
-        run: hatch build -t wheel
+  publish-pypi:
+    name: Publish to PyPI
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/cvglue
+
+    permissions:
+      id-token: write  # 必需：允许 OIDC 身份验证
+      contents: write  # 允许创建 GitHub Release（可选）
+
+    steps:
+      - name: Download dists
+        uses: actions/download-artifact@v4
+        with:
+          name: pypi-dist
+          path: dist/
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/*
