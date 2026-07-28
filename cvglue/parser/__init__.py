@@ -1,27 +1,15 @@
 from __future__ import annotations
 
-import numpy as np
-import PIL.ImageFile
-
-from .base import base_parser
+from .base import anno_exists, base_parser, set_image_anno
 from .face import (
-    attribute_parser,
     attribute_stage,
-    blur_parser,
     blur_stage,
-    face_parser,
     face_stage,
-    faceid_parser,
     faceid_stage,
-    genderage_parser,
-    # genderage_stage,
-    landmarks_parser,
+    genderage_stage,
     landmarks_stage,
-    quality_parser,
     quality_stage,
 )
-
-PIL.ImageFile.LOAD_TRUNCATED_IMAGES = True  # avoid "Decompressed Data Too Large" error
 
 __all__ = [
     "anno_exists",
@@ -36,17 +24,26 @@ __all__ = [
     "set_image_anno",
 ]
 
+def face_parser(method="lamply", mode="selfie", **kwargs):
+    return base_parser(stages=[face_stage(method=method, mode=mode, **kwargs)])
 
-def set_image_anno(base_name, **kwargs):
-    return {"name": base_name, **kwargs}
+def landmarks_parser(method="adaptivewing"):
+    return base_parser(stages=[landmarks_stage(method=method)])
 
+def attribute_parser(method="headpose"):
+    return base_parser(stages=[attribute_stage(method=method)])
 
-def anno_exists(anno: dict, domain: str | list, **kwargs):
-    if isinstance(domain, list):
-        logit = [anno_exists(anno, spec) for spec in domain]
-        return np.sum(logit) == len(domain)
-    return domain in anno and not (isinstance(anno[domain], (dict, list)) and len(anno[domain]) == 0)
+def genderage_parser(method="insightface"):
+    return base_parser(stages=[genderage_stage(method=method)])
 
+def faceid_parser(method="insightface"):
+    return base_parser(stages=[faceid_stage(method=method)])
+
+def blur_parser(method="opencv"):
+    return base_parser(stages=[blur_stage(method=method)])
+
+def quality_parser(method="tface"):
+    return base_parser(stages=[quality_stage(method=method)])
 
 def get_parser(version):
     if "lamply" in version:

@@ -1,12 +1,22 @@
 import os
 
 import cv2
+import numpy as np
 from tqdm import tqdm, trange
 
 from ..utils import check_image_format, make_dataset, read_json_file, write_json_file
-from . import set_image_anno
 
-__all__ = ["base_parser"]
+__all__ = ["anno_exists", "base_parser", "set_image_anno"]
+
+def set_image_anno(base_name, **kwargs):
+    return {"name": base_name, **kwargs}
+
+
+def anno_exists(anno: dict, domain: str | list, **kwargs):
+    if isinstance(domain, list):
+        logit = [anno_exists(anno, spec) for spec in domain]
+        return np.sum(logit) == len(domain)
+    return domain in anno and not (isinstance(anno[domain], (dict, list)) and len(anno[domain]) == 0)
 
 
 class base_parser:

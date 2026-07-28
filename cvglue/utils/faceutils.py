@@ -5,6 +5,7 @@ import numpy as np
 from scipy.spatial import Delaunay
 from skimage import transform as trans
 
+from ..thirdparty.InsightFace.face_align import norm_crop
 from .imageutils import apply_mask_merge, cal_bounding_rect, cvt_box_format, pad_rect
 from .logger import setup_logger
 from .maskutils import generate_contours_mask
@@ -29,6 +30,7 @@ __all__ = [
     "get_face_parser",
     "get_hairline_point_cropv3",
     "get_landmarks_boundaries",
+    "norm_crop",
     "render_face",
     "warp_back",
     "warp_face_Delaunay",

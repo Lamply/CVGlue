@@ -11,8 +11,7 @@ import requests
 try:
     # pip install u-msgpack-python
     import umsgpack
-    from deepdiff import DeepDiff
-except:  # noqa: E722 S110
+except ModuleNotFoundError:
     pass
 
 from .logger import setup_logger
@@ -344,6 +343,12 @@ def check_dict_differences(
     Raises:
         ValueError: If there are differences between the dictionaries that are not excluded
     """
+    try:
+        from deepdiff import DeepDiff
+    except ModuleNotFoundError:
+        llog.error(
+            "DeepDiff is not installed. Please install it using 'pip install deepdiff'."
+        )
     if exclude_diff is None:
         exclude_diff = []
     if exclude_keys is None:
