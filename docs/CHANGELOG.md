@@ -7,6 +7,8 @@
 
 ## [Unreleased]
 
+### Changed
+- 调整 albumentations 版本限制
 
 ## [1.4.0] - 2026-08-01
 

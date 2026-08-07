@@ -99,7 +99,7 @@ def show(
         for i, img in enumerate(images):
             plt.subplot(row, col, i + 1)
             plt.subplots_adjust(hspace=0, wspace=0)
-            plt.imshow(img2display(img, format=format, func=func, idx=idx), **kwargs)
+            plt.imshow(img2display(img, format=format.upper(), func=func, idx=idx), **kwargs)
             plt.axis("off")
         if colorbar:
             plt.colorbar()

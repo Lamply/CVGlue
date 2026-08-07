@@ -250,7 +250,7 @@ class face_detector:
                 min_height=long_size * 2,
                 min_width=long_size * 2,
                 border_mode=cv2.BORDER_CONSTANT,
-                value=0,
+                fill=0,
             )
         ]
         trans_list += [
